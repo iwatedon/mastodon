@@ -58,6 +58,7 @@ class StatusesIndex < Chewy::Index
     root date_detection: false do
       field :id, type: 'long'
       field :account_id, type: 'long'
+      field :created_at, type: 'date'
 
       field :text, type: 'text', analyzer: 'ja_default_analyzer', value: ->(status) { [status.spoiler_text, Formatter.instance.plaintext(status)].concat(status.media_attachments.map(&:description)).concat(status.preloadable_poll ? status.preloadable_poll.options : []).join("\n\n") } do
         field :stemmed, type: 'text', analyzer: 'content'

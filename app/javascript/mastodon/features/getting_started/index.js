@@ -21,6 +21,7 @@ const messages = defineMessages({
   public_timeline: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   settings_subheading: { id: 'column_subheading.settings', defaultMessage: 'Settings' },
   community_timeline: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  gochisou_timeline: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -100,9 +101,10 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnSubheading key='header-discover' text={intl.formatMessage(messages.discover)} />,
         <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/timelines/public/local' />,
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
+	<ColumnLink key='gochisou_timeline' icon='cutlery' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
       );
 
-      height += 34 + 48*2;
+      height += 34 + 48*3;
 
       if (profile_directory) {
         navItems.push(
@@ -117,12 +119,22 @@ class GettingStarted extends ImmutablePureComponent {
       );
 
       height += 34;
-    } else if (profile_directory) {
+    } else {
       navItems.push(
         <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
       );
+      navItems.push(
+	<ColumnLink key='gochisou_timeline' icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
+      );
 
-      height += 48;
+      height += 48*2;
+      if (profile_directory) {
+        navItems.push(
+          <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />
+	);
+
+        height += 48;
+      }
     }
 
     if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {

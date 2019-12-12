@@ -20,6 +20,7 @@ import AdministrationIcon from '@/material-icons/400-24px/manufacturing.svg?reac
 import MenuIcon from '@/material-icons/400-24px/menu.svg?react';
 import PersonAddIcon from '@/material-icons/400-24px/person_add.svg?react';
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
+import RestaurantIcon from '@/material-icons/400-24px/restaurant.svg?react';
 import SettingsIcon from '@/material-icons/400-24px/settings-fill.svg?react';
 import StarIcon from '@/material-icons/400-24px/star.svg?react';
 import { fetchFollowRequests } from 'mastodon/actions/accounts';
@@ -44,6 +45,7 @@ const messages = defineMessages({
   community_timeline: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
   explore: { id: 'navigation_bar.explore', defaultMessage: 'Explore' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Private mentions' },
+  gochisou_timeline: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   administration: { id: 'navigation_bar.administration', defaultMessage: 'Administration' },
@@ -121,6 +123,7 @@ class GettingStarted extends ImmutablePureComponent {
     navItems.push(
       <ColumnLink key='community_timeline' icon='users' iconComponent={PeopleIcon} text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
       <ColumnLink key='public_timeline' icon='globe' iconComponent={PublicIcon} text={intl.formatMessage(messages.public_timeline)} to='/public' />,
+      <ColumnLink key='gochisou_timeline' icon='cutlery' iconComponent={RestaurantIcon} text={intl.formatMessage(messages.gochisou_timeline)} to='/tags/gochisou_photo' />,
     );
 
     if (signedIn) {

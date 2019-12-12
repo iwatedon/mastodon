@@ -24,6 +24,7 @@ const messages = defineMessages({
   firehose: { id: 'column.firehose', defaultMessage: 'Live feeds' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Private mentions' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favorites' },
+  gochisou: { id: 'tabs_bar.gochisou_timeline', defaultMessage: 'Gochisou' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -92,7 +93,10 @@ class NavigationPanel extends Component {
         )}
 
         {(signedIn || timelinePreview) && (
+        <>
           <ColumnLink transparent to='/public/local' isActive={this.isFirehoseActive} icon='globe' text={intl.formatMessage(messages.firehose)} />
+          <ColumnLink transparent to='/tags/gochisou_photo' icon='cutlery' text={intl.formatMessage(messages.gochisou)} />
+        </>
         )}
 
         {!signedIn && (

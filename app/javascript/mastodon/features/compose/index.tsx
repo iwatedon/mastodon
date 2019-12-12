@@ -16,6 +16,7 @@ import MenuIcon from '@/material-icons/400-24px/menu.svg?react';
 import NotificationsIcon from '@/material-icons/400-24px/notifications-fill.svg?react';
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
 import SettingsIcon from '@/material-icons/400-24px/settings.svg?react';
+import RestaurantIcon from '@/material-icons/400-24px/restaurant.svg?react';
 import { mountCompose, unmountCompose } from 'mastodon/actions/compose';
 import { openModal } from 'mastodon/actions/modal';
 import { Column } from 'mastodon/components/column';
@@ -38,6 +39,7 @@ const messages = defineMessages({
     id: 'navigation_bar.live_feed_local',
     defaultMessage: 'Live feed (local)',
   },
+  gochisou: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   preferences: {
     id: 'navigation_bar.preferences',
     defaultMessage: 'Preferences',
@@ -139,6 +141,16 @@ const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
               aria-label={intl.formatMessage(messages.live_feed_public)}
             >
               <Icon id='globe' icon={PublicIcon} />
+            </Link>
+          )}
+          {!columns.some((column) => (column.get('id') === 'HASHTAG' && column.get('params').get('id') === 'gochisou_photo')) && (
+            <Link
+              to='/tags/gochisou_photo'
+              className='drawer__tab'
+              title={intl.formatMessage(messages.gochisou)}
+              aria-label={intl.formatMessage(messages.gochisou)}
+            >
+              <Icon id='cutlery' icon={RestaurantIcon} />
             </Link>
           )}
           <a

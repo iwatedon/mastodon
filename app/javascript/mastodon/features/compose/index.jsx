@@ -18,6 +18,7 @@ import MenuIcon from '@/material-icons/400-24px/menu.svg?react';
 import NotificationsIcon from '@/material-icons/400-24px/notifications-fill.svg?react';
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
 import SettingsIcon from '@/material-icons/400-24px/settings-fill.svg?react';
+import RestaurantIcon from '@/material-icons/400-24px/restaurant.svg?react';
 import { openModal } from 'mastodon/actions/modal';
 import Column from 'mastodon/components/column';
 import { Icon }  from 'mastodon/components/icon';
@@ -38,6 +39,7 @@ const messages = defineMessages({
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
   public: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   community: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  gochisou: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   logout: { id: 'navigation_bar.logout', defaultMessage: 'Logout' },
   compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new post' },
@@ -108,6 +110,9 @@ class Compose extends PureComponent {
             )}
             {!columns.some(column => column.get('id') === 'PUBLIC') && (
               <Link to='/public' className='drawer__tab' title={intl.formatMessage(messages.public)} aria-label={intl.formatMessage(messages.public)}><Icon id='globe' icon={PublicIcon} /></Link>
+            )}
+            {!columns.some(column => (column.get('id') === 'HASHTAG' && column.get('params').get('id') === 'gochisou_photo')) && (
+              <Link to='/tags/gochisou_photo' className='drawer__tab' title={intl.formatMessage(messages.gochisou)} aria-label={intl.formatMessage(messages.gochisou)}><Icon id='cutlery' icon={RestaurantIcon} /></Link>
             )}
             <a href='/settings/preferences' className='drawer__tab' title={intl.formatMessage(messages.preferences)} aria-label={intl.formatMessage(messages.preferences)}><Icon id='cog' icon={SettingsIcon} /></a>
             <a href='/auth/sign_out' className='drawer__tab' title={intl.formatMessage(messages.logout)} aria-label={intl.formatMessage(messages.logout)} onClick={this.handleLogoutClick}><Icon id='sign-out' icon={LogoutIcon} /></a>

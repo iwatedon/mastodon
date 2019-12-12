@@ -22,6 +22,8 @@ import NotificationsIcon from '@/material-icons/400-24px/notifications.svg?react
 import PersonAddActiveIcon from '@/material-icons/400-24px/person_add-fill.svg?react';
 import PersonAddIcon from '@/material-icons/400-24px/person_add.svg?react';
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
+import RestaurantActiveIcon from '@/material-icons/400-24px/restaurant-fill.svg?react';
+import RestaurantIcon from '@/material-icons/400-24px/restaurant.svg?react';
 import SettingsIcon from '@/material-icons/400-24px/settings.svg?react';
 import StarActiveIcon from '@/material-icons/400-24px/star-fill.svg?react';
 import StarIcon from '@/material-icons/400-24px/star.svg?react';
@@ -57,6 +59,7 @@ const messages = defineMessages({
   firehose: { id: 'column.firehose', defaultMessage: 'Live feeds' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Private mentions' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favorites' },
+  gochisou_timeline: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   preferences: {
     id: 'navigation_bar.preferences',
@@ -280,6 +283,14 @@ export const NavigationPanel: React.FC<{ multiColumn?: boolean }> = ({
 
             <FollowedTagsPanel />
 
+            <ColumnLink
+              transparent
+              to='/tags/gochisou_photo'
+              icon='cutlery'
+              iconComponent={RestaurantIcon}
+              activeIconComponent={RestaurantActiveIcon}
+              text={intl.formatMessage(messages.gochisou_timeline)}
+            />
             <ColumnLink
               transparent
               to='/favourites'

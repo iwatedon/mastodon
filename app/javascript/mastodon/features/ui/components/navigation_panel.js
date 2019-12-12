@@ -18,6 +18,7 @@ const messages = defineMessages({
   explore: { id: 'explore.title', defaultMessage: 'Explore' },
   local: { id: 'tabs_bar.local_timeline', defaultMessage: 'Local' },
   federated: { id: 'tabs_bar.federated_timeline', defaultMessage: 'Federated' },
+  gochisou: { id: 'tabs_bar.gochisou_timeline', defaultMessage: 'Gochisou' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favourites' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
@@ -69,6 +70,7 @@ class NavigationPanel extends React.Component {
           <>
             <ColumnLink transparent to='/public/local' icon='users' text={intl.formatMessage(messages.local)} />
             <ColumnLink transparent exact to='/public' icon='globe' text={intl.formatMessage(messages.federated)} />
+            <ColumnLink transparent to='/tags/gochisou_photo' icon='cutlery' text={intl.formatMessage(messages.gochisou)} />
           </>
         )}
 
@@ -105,3 +107,4 @@ class NavigationPanel extends React.Component {
   }
 
 }
+

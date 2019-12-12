@@ -21,6 +21,7 @@ const messages = defineMessages({
   public_timeline: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   settings_subheading: { id: 'column_subheading.settings', defaultMessage: 'Settings' },
   community_timeline: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  gochisou_timeline: { id: 'navigation_bar.gochisou_timeline', defaultMessage: 'Gochisou timeline' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -99,10 +100,11 @@ class GettingStarted extends ImmutablePureComponent {
       navItems.push(
         <ColumnSubheading key={i++} text={intl.formatMessage(messages.discover)} />,
         <ColumnLink key={i++} icon='users' text={intl.formatMessage(messages.community_timeline)} to='/timelines/public/local' />,
+	<ColumnLink key={i++} icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
         <ColumnLink key={i++} icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
       );
 
-      height += 34 + 48*2;
+      height += 34 + 48*3;
 
       if (profile_directory) {
         navItems.push(

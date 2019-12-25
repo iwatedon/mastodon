@@ -93,6 +93,13 @@ class TrendingTags
     def get(limit, filtered: true)
       tag_ids = redis.zrevrange(KEY, 0, LIMIT - 1).map(&:to_i)
 
+      # Always show gochisou_photo tag as a trend tag.
+      gochisou_tag = Tag.find_normalized('gochisou_photo')
+      if gochisou_tag
+        tag_ids.delete(gochisou_tag.id)
+        tag_ids.prepend(gochisou_tag.id)
+      end
+
       tags = Tag.where(id: tag_ids)
       tags = tags.trendable if filtered
       tags = tags.index_by(&:id)

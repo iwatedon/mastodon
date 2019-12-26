@@ -119,12 +119,22 @@ class GettingStarted extends ImmutablePureComponent {
       );
 
       height += 34;
-    } else if (profile_directory) {
+    } else {
       navItems.push(
         <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
       );
+      navItems.push(
+	<ColumnLink key='gochisou_timeline' icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
+      );
 
-      height += 48;
+      height += 48*2;
+      if (profile_directory) {
+        navItems.push(
+          <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />
+	);
+
+        height += 48;
+      }
     }
 
     if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {

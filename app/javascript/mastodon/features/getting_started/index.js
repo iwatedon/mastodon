@@ -100,8 +100,8 @@ class GettingStarted extends ImmutablePureComponent {
       navItems.push(
         <ColumnSubheading key={i++} text={intl.formatMessage(messages.discover)} />,
         <ColumnLink key={i++} icon='users' text={intl.formatMessage(messages.community_timeline)} to='/timelines/public/local' />,
-	<ColumnLink key={i++} icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
         <ColumnLink key={i++} icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
+	<ColumnLink key={i++} icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
       );
 
       height += 34 + 48*3;
@@ -119,12 +119,19 @@ class GettingStarted extends ImmutablePureComponent {
       );
 
       height += 34;
-    } else if (profile_directory) {
+    } else {
       navItems.push(
-        <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />
+	<ColumnLink key={i++} icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
       );
 
       height += 48;
+      if (profile_directory) {
+	navItems.push(
+          <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />
+	);
+
+	height += 48;
+      }
     }
 
     navItems.push(

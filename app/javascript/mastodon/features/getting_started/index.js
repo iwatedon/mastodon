@@ -124,6 +124,12 @@ class GettingStarted extends ImmutablePureComponent {
       );
 
       height += 34;
+
+      navItems.push(
+        <ColumnLink key='gochisou_timeline' icon='hashtag' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
+      );
+
+      height += 48;
     }
 
     if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {

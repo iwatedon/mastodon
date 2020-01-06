@@ -8,6 +8,11 @@ class ProcessHashtagsService < BaseService
     @previous_tags = status.tags.to_a
     @current_tags  = []
 
+    # default hashtag
+    if @status.visibility == 'public' && @status.local? && !@status.reply?
+      @raw_tags << 'gochisou_photo'
+    end
+
     assign_tags!
     update_featured_tags!
   end

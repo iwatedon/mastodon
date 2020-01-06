@@ -5,6 +5,11 @@ class ProcessHashtagsService < BaseService
     tags    = Extractor.extract_hashtags(status.text) if status.local?
     records = []
 
+    # default hashtag
+    if status.visibility == 'public' && status.local? && !status.reply?
+      tags << 'gochisou_photo'
+    end
+
     Tag.find_or_create_by_names(tags) do |tag|
       status.tags << tag
       records << tag

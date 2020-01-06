@@ -5,6 +5,13 @@ class ProcessHashtagsService < BaseService
     tags    = Extractor.extract_hashtags(status.text) if status.local?
     records = []
 
+    # default hashtag
+    default_hashtag = ENV['X_DEFAULT_HASHTAG']
+    media_only = ENV['X_DEFAULT_HASHTAG_MEDIA_ONLY'] == 'true'
+    if default_hashtag && status.visibility == 'public' && status.local? && !status.reply?
+      tags << default_hashtag unless media_only && status.media_attachments.none?
+    end
+
     Tag.find_or_create_by_names(tags) do |tag|
       status.tags << tag
       records << tag

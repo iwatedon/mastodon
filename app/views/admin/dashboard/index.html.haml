@@ -88,6 +88,10 @@
         %li
           Redis
           %span.pull-right= @redis_version
+        - if @node_version
+          %li
+            Node.js
+            %span.pull-right= @node_version
 
   .dashboard__widgets__space
     %div

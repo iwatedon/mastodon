@@ -25,19 +25,25 @@ class StatusesSearchService < BaseService
   private
 
   def status_search_results
-    request             = parsed_query.request
-    results             = request.collapse(field: :id).order(id: { order: :desc }).limit(@limit).offset(@offset).objects.compact
+    results = Status.where(visibility: :public)
+                    .where('statuses.text &@~ ?', @query)
+                    .searchable_by_account(@account)
+                    .offset(@offset)
+                    .limit(@limit)
+                    .order('statuses.id DESC')
+
+    results = results.where(account_id: @options[:account_id]) if @options[:account_id].present?
+
+    if @options[:min_id].present? || @options[:max_id].present?
+      results = results.where('statuses.id > ?', @options[:min_id]) if @options[:min_id].present?
+      results = results.where('statuses.id < ?', @options[:max_id]) if @options[:max_id].present?
+    end
+
     account_ids         = results.map(&:account_id)
     account_domains     = results.map(&:account_domain)
     preloaded_relations = @account.relations_map(account_ids, account_domains)
 
     results.reject { |status| StatusFilter.new(status, @account, preloaded_relations).filtered? }
-  rescue Faraday::ConnectionFailed, Parslet::ParseFailed
-    []
-  end
-
-  def parsed_query
-    SearchQueryTransformer.new.apply(SearchQueryParser.new.parse(@query), current_account: @account)
   end
 
   def convert_deprecated_options!

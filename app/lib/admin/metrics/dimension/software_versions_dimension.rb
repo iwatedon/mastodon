@@ -10,7 +10,7 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
   protected
 
   def perform_query
-    [mastodon_version, ruby_version, postgresql_version, redis_version]
+    [mastodon_version, ruby_version, postgresql_version, redis_version, nodejs_version]
   end
 
   def mastodon_version
@@ -65,5 +65,16 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
         redis.info
       end
     end
+  end
+
+  def nodejs_version
+    value = `node -v 2>/dev/null`&.match('v([\d\.]+)')&.[](1)
+
+    {
+      key: 'nodejs',
+      human_key: 'Node.js',
+      value: value,
+      human_value: value,
+    }
   end
 end

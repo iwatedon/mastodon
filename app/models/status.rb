@@ -104,6 +104,16 @@ class Status < ApplicationRecord
     end
   }
 
+  scope :searchable_by_account, ->(account) {
+    joined = joins('LEFT OUTER JOIN mentions ON mentions.status_id = statuses.id')
+             .joins('LEFT OUTER JOIN statuses r_statuses ON r_statuses.reblog_of_id = statuses.id')
+             .joins('LEFT OUTER JOIN favourites ON favourites.status_id = statuses.id')
+    joined.where('statuses.account_id = ?', account.id)
+          .or(joined.where('mentions.account_id = ?', account.id))
+          .or(joined.where('favourites.account_id = ?', account.id))
+          .or(joined.where('r_statuses.account_id = ?', account.id)).distinct
+  }
+
   cache_associated :application,
                    :media_attachments,
                    :conversation,

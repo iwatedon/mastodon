@@ -10,7 +10,7 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
   protected
 
   def perform_query
-    [mastodon_version, ruby_version, postgresql_version, redis_version, elasticsearch_version, libvips_version, ffmpeg_version].compact
+    [mastodon_version, ruby_version, postgresql_version, redis_version, elasticsearch_version, libvips_version, ffmpeg_version, nodejs_version].compact
   end
 
   def mastodon_version
@@ -90,5 +90,16 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
     }
   rescue Terrapin::CommandNotFoundError, Terrapin::ExitStatusError, JSON::ParserError
     nil
+  end
+
+  def nodejs_version
+    value = `node -v 2>/dev/null`.match('v([\d\.]+)')&.[](1)
+
+    {
+      key: 'nodejs',
+      human_key: 'Node.js',
+      value: value,
+      human_value: value,
+    }
   end
 end

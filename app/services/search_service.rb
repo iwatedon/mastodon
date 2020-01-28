@@ -35,10 +35,10 @@ class SearchService < BaseService
   def perform_statuses_search!
     results = Status.where(visibility: :public)
                     .where('statuses.text &@~ ?', @query)
-                    .searchable_by_account(@account)
-                    .offset(@offset)
-                    .limit(@limit)
-                    .order('statuses.id DESC')
+    results = results.searchable_by_account(@account) unless @account.user.setting_x_search_all_statuses
+    results = results.offset(@offset)
+                     .limit(@limit)
+                     .order('statuses.id DESC')
 
     results = results.where(account_id: @options[:account_id]) if @options[:account_id].present?
 

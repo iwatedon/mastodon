@@ -103,6 +103,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     let reblogLink = '';
     let reblogIcon = 'retweet';
     let favouriteLink = '';
+    let visibilityIcon = 'globe';
 
     if (this.props.measureHeight) {
       outerStyle.height = `${this.state.height}px`;
@@ -162,8 +163,12 @@ export default class DetailedStatus extends ImmutablePureComponent {
 
     if (status.get('visibility') === 'direct') {
       reblogIcon = 'envelope';
+      visibilityIcon = 'envelope';
     } else if (status.get('visibility') === 'private') {
       reblogIcon = 'lock';
+      visibilityIcon = 'lock';
+    } else if (status.get('visibility') === 'unlisted') {
+      visibilityIcon = 'unlock';
     }
 
     if (status.get('visibility') === 'private') {
@@ -221,6 +226,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
           {media}
 
           <div className='detailed-status__meta'>
+            <Icon id={visibilityIcon} /> ·
             <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
             </a>{applicationLink} · {reblogLink} · {favouriteLink}

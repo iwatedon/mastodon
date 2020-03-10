@@ -9,8 +9,9 @@ class ProcessHashtagsService < BaseService
     @current_tags  = []
 
     # default hashtag
-    if @status.visibility == 'public' && @status.local? && !@status.reply?
-      @raw_tags << 'gochisou_photo'
+    default_hashtag = ENV['X_DEFAULT_HASHTAG']
+    if default_hashtag && @status.visibility == 'public' && @status.local? && !@status.reply?
+      @raw_tags << default_hashtag
     end
 
     assign_tags!

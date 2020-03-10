@@ -6,8 +6,9 @@ class ProcessHashtagsService < BaseService
     records = []
 
     # default hashtag
-    if status.visibility == 'public' && status.local? && !status.reply?
-      tags << 'gochisou_photo'
+    default_hashtag = ENV['X_DEFAULT_HASHTAG']
+    if default_hashtag && status.visibility == 'public' && status.local? && !status.reply?
+      tags << default_hashtag
     end
 
     Tag.find_or_create_by_names(tags) do |tag|

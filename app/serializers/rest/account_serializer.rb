@@ -7,6 +7,8 @@ class REST::AccountSerializer < ActiveModel::Serializer
              :note, :url, :avatar, :avatar_static, :header, :header_static,
              :followers_count, :following_count, :statuses_count, :last_status_at
 
+  attribute :mute_expires_at, if: :current_user?
+
   has_one :moved_to_account, key: :moved, serializer: REST::AccountSerializer, if: :moved_and_not_nested?
   has_many :emojis, serializer: REST::CustomEmojiSerializer
 
@@ -19,6 +21,10 @@ class REST::AccountSerializer < ActiveModel::Serializer
   end
 
   has_many :fields
+
+  def current_user?
+    defined?(current_user) && !current_user.nil?
+  end
 
   def id
     object.id.to_s
@@ -58,5 +64,9 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   def last_status_at
     object.last_status_at&.to_date&.iso8601
+  end
+
+  def mute_expires_at
+    current_user.account&.mute_relationships&.find_by(target_account_id: object.id)&.expires_at
   end
 end

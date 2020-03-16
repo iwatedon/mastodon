@@ -78,6 +78,7 @@ module AccountInteractions
     has_many :blocked_by, -> { order('blocks.id desc') }, through: :blocked_by_relationships, source: :account
 
     # Mute relationships
+    has_many :mutes
     has_many :mute_relationships, class_name: 'Mute', foreign_key: 'account_id', dependent: :destroy
     has_many :muting, -> { order('mutes.id desc') }, through: :mute_relationships, source: :target_account
     has_many :muted_by_relationships, class_name: 'Mute', foreign_key: :target_account_id, dependent: :destroy
@@ -105,9 +106,16 @@ module AccountInteractions
                        .find_or_create_by!(target_account: other_account)
   end
 
-  def mute!(other_account, notifications: nil)
+  def mute!(other_account, notifications: nil, duration: 0)
     notifications = true if notifications.nil?
-    mute = mute_relationships.create_with(hide_notifications: notifications).find_or_create_by!(target_account: other_account)
+    mute = mutes.find_by(target_account: other_account)
+    expires_at = (duration.zero? ? nil : (Time.current + duration.seconds))
+    if mute
+      mute.update!(expires_at: expires_at)
+    else
+      mute = mute_relationships.create_with(hide_notifications: notifications, expires_at: expires_at).find_or_create_by!(target_account: other_account)
+    end
+
     remove_potential_friendship(other_account)
 
     # When toggling a mute between hiding and allowing notifications, the mute will already exist, so the find_or_create_by! call will return the existing Mute without updating the hide_notifications attribute. Therefore, we check that hide_notifications? is what we want and set it if it isn't.

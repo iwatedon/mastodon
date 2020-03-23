@@ -1,3 +1,24 @@
+GIT
+  remote: https://github.com/ianheggie/health_check
+  revision: 0b799ead604f900ed50685e9b2d469cd2befba5b
+  ref: 0b799ead604f900ed50685e9b2d469cd2befba5b
+  specs:
+    health_check (4.0.0.pre)
+      rails (>= 4.0)
+
+GIT
+  remote: https://github.com/witgo/nilsimsa
+  revision: fd184883048b922b176939f851338d0a4971a532
+  ref: fd184883048b922b176939f851338d0a4971a532
+  specs:
+    nilsimsa (1.1.2)
+
+PATH
+  remote: lib/stoplight_admin_rails
+  specs:
+    stoplight_admin_rails (0.1.0)
+      rails (~> 5.2.4, >= 5.2.4.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -791,6 +812,8 @@ DEPENDENCIES
   sprockets-rails (~> 3.2)
   stackprof
   stoplight (~> 2.2.1)
+  stoplight_admin_rails!
+  streamio-ffmpeg (~> 3.0)
   strong_migrations (~> 0.7)
   thor (~> 1.1)
   tty-prompt (~> 0.23)

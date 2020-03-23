@@ -161,3 +161,6 @@ gem 'connection_pool', require: false
 
 gem 'xorcist', '~> 1.1'
 gem 'pluck_each', '~> 0.1.3'
+
+gem 'stoplight_admin_rails', path: 'lib/stoplight_admin_rails'
+

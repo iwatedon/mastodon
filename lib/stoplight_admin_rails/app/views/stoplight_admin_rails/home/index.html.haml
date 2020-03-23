@@ -35,31 +35,31 @@
             %tr
               %td.indicator
                 - if l[:color] == Stoplight::Color::GREEN
-                  %form{method: 'post', action: red_path}
+                  = form_tag(red_path, method: 'post') do
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-success'}
                       G
                       %span.hidden-xs> REEN
                 - elsif l[:color] == Stoplight::Color::YELLOW
-                  %form{method: 'post', action: green_path}
+                  = form_tag(green_path, method: 'post') do
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-warning'}
                       Y
                       %span.hidden-xs> ELLOW
                 - else
-                  %form{method: 'post', action: green_path}
+                  = form_tag(green_path, method: 'post') do
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-danger'}
                       R
                       %span.hidden-xs> ED
               %td.locked
                 - if l[:locked]
-                  %form{method: 'post', action: unlock_path}
+                  = form_tag(unlock_path, method: 'post') do
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-link'}
                       %span{class: 'glyphicon glyphicon-lock'}
                 - else
-                  %form{method: 'post', action: lock_path}
+                  = form_tag(lock_path, method: 'post') do
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-link'}
                       %span{class: 'glyphicon glyphicon-minus'}

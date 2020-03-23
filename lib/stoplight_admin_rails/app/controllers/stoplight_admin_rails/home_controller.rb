@@ -1,7 +1,5 @@
 module StoplightAdminRails
   class HomeController < ApplicationController
-    protect_from_forgery with: :null_session
-
     layout 'stoplight_admin_rails/application'
 
     def index

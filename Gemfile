@@ -160,3 +160,5 @@ end
 
 gem 'concurrent-ruby', require: false
 gem 'connection_pool', require: false
+
+gem 'stoplight_admin_rails', path: 'lib/stoplight_admin_rails'

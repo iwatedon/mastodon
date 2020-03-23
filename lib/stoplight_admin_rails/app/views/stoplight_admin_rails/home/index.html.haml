@@ -9,16 +9,16 @@
       Ensure that your Stoplight data store is properly configured and that your Stoplight blocks have been run.
   - else
     .well
-      %form{method: 'post', action: url('/green_all')}
-        %button.btn-lg.btn.btn-success{type: 'submit', disabled: count_red + count_yellow > 0 ? nil : 'disabled'} Greenify All
+      %form{method: 'post', action: green_all_path}
+        %button.btn-lg.btn.btn-success{type: 'submit', disabled: @stats[:count_red] + @stats[:count_yellow] > 0 ? nil : 'disabled'} Greenify All
 
     .progress
-      .progress-bar.progress-bar-danger{style: "width: #{percent_red}%"}
-        .span= count_red
-      .progress-bar.progress-bar-warning{style: "width: #{percent_yellow}%"}
-        .span= count_yellow
-      .progress-bar.progress-bar-success{style: "width: #{percent_green}%"}
-        .span= count_green
+      .progress-bar.progress-bar-danger{style: "width: #{@stats[:percent_red]}%"}
+        .span= @stats[:count_red]
+      .progress-bar.progress-bar-warning{style: "width: #{@stats[:percent_yellow]}%"}
+        .span= @stats[:count_yellow]
+      .progress-bar.progress-bar-success{style: "width: #{@stats[:percent_green]}%"}
+        .span= @stats[:count_green]
 
     .lights
       %table.table.table-hover
@@ -34,32 +34,32 @@
           - @lights.each do |l|
             %tr
               %td.indicator
-                - if l[:color] == GREEN
-                  %form{method: 'post', action: url('/red')}
+                - if l[:color] == Stoplight::Color::GREEN
+                  %form{method: 'post', action: red_path}
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-success'}
                       G
                       %span.hidden-xs> REEN
-                - elsif l[:color] == YELLOW
-                  %form{method: 'post', action: url('/green')}
+                - elsif l[:color] == Stoplight::Color::YELLOW
+                  %form{method: 'post', action: green_path}
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-warning'}
                       Y
                       %span.hidden-xs> ELLOW
                 - else
-                  %form{method: 'post', action: url('/green')}
+                  %form{method: 'post', action: green_path}
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-danger'}
                       R
                       %span.hidden-xs> ED
               %td.locked
                 - if l[:locked]
-                  %form{method: 'post', action: url('/unlock')}
+                  %form{method: 'post', action: unlock_path}
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-link'}
                       %span{class: 'glyphicon glyphicon-lock'}
                 - else
-                  %form{method: 'post', action: url('/lock')}
+                  %form{method: 'post', action: lock_path}
                     %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
                     %button{type: 'submit', class: 'btn btn-link'}
                       %span{class: 'glyphicon glyphicon-minus'}

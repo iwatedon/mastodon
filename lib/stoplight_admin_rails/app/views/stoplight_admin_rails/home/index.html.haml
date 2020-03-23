@@ -1,0 +1,79 @@
+.jumbotron.hidden-xs.hidden-sm
+  %h1 &#x1f6a6; All of the Lights
+  %p Cop lights, flashlights, spotlights, strobe lights&hellip;
+
+.main
+  - if @lights.empty?
+    .alert.alert-warning{role: 'alert'}
+      %strong No lights found.
+      Ensure that your Stoplight data store is properly configured and that your Stoplight blocks have been run.
+  - else
+    .well
+      %form{method: 'post', action: green_all_path}
+        %button.btn-lg.btn.btn-success{type: 'submit', disabled: @stats[:count_red] + @stats[:count_yellow] > 0 ? nil : 'disabled'} Greenify All
+
+    .progress
+      .progress-bar.progress-bar-danger{style: "width: #{@stats[:percent_red]}%"}
+        .span= @stats[:count_red]
+      .progress-bar.progress-bar-warning{style: "width: #{@stats[:percent_yellow]}%"}
+        .span= @stats[:count_yellow]
+      .progress-bar.progress-bar-success{style: "width: #{@stats[:percent_green]}%"}
+        .span= @stats[:count_green]
+
+    .lights
+      %table.table.table-hover
+        %thead.hidden-xs
+          %tr
+            %th Status
+            %th
+              %abbr{title: 'Locked lights will not change color automatically.'} Locked?
+            %th Name
+            %th
+              %abbr{title: 'Exceptions which caused the light to turn red.'} Failures
+        %tbody
+          - @lights.each do |l|
+            %tr
+              %td.indicator
+                - if l[:color] == Stoplight::Color::GREEN
+                  = form_tag(red_path, method: 'post') do
+                    %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
+                    %button{type: 'submit', class: 'btn btn-success'}
+                      G
+                      %span.hidden-xs> REEN
+                - elsif l[:color] == Stoplight::Color::YELLOW
+                  = form_tag(green_path, method: 'post') do
+                    %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
+                    %button{type: 'submit', class: 'btn btn-warning'}
+                      Y
+                      %span.hidden-xs> ELLOW
+                - else
+                  = form_tag(green_path, method: 'post') do
+                    %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
+                    %button{type: 'submit', class: 'btn btn-danger'}
+                      R
+                      %span.hidden-xs> ED
+              %td.locked
+                - if l[:locked]
+                  = form_tag(unlock_path, method: 'post') do
+                    %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
+                    %button{type: 'submit', class: 'btn btn-link'}
+                      %span{class: 'glyphicon glyphicon-lock'}
+                - else
+                  = form_tag(lock_path, method: 'post') do
+                    %input{type: 'hidden', name: 'names', value: URI.escape(l[:name])}
+                    %button{type: 'submit', class: 'btn btn-link'}
+                      %span{class: 'glyphicon glyphicon-minus'}
+              %td.name
+                = l[:name]
+              %td.failures
+                - if l[:failures]
+                  %ul
+                    - l[:failures].each do |failure|
+                      %li
+                        %span.error
+                          &= failure.error_class
+                          \:
+                          &= failure.error_message
+                        @
+                        %span.timestamp
+                          &= failure.time

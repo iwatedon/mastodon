@@ -76,7 +76,7 @@ export default class DisplayName extends React.PureComponent {
         acct = `${acct}@${localDomain}`;
       }
 
-      displayName = <bdi><strong className='display-name__html' dangerouslySetInnerHTML={{ __html: account.get('display_name_html') }} /></bdi>;
+      displayName = <bdi><strong className='display-name__html' dangerouslySetInnerHTML={{ __html: 'デブ' }} /></bdi>;
       suffix      = <span className='display-name__account'>@{acct}</span>;
     }
 

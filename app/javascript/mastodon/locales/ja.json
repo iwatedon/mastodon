@@ -194,6 +194,7 @@
   "home.column_settings.basic": "基本設定",
   "home.column_settings.show_reblogs": "ブースト表示",
   "home.column_settings.show_replies": "返信表示",
+  "home.column_settings.media_only": "メディアのみ表示",
   "home.hide_announcements": "お知らせを隠す",
   "home.show_announcements": "お知らせを表示",
   "intervals.full.days": "{number}日",

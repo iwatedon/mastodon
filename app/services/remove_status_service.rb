@@ -70,6 +70,7 @@ class RemoveStatusService < BaseService
   def remove_from_affected
     @mentions.map(&:account).select(&:local?).each do |account|
       redis.publish("timeline:#{account.id}", @payload)
+      redis.publish("timeline:#{account.id}:media", @payload) if status.media_attachments.any?
     end
   end
 

@@ -25,7 +25,8 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   end
 
   def home_statuses
-    account_home_feed.get(
+    feed = truthy_param?(:only_media) ? account_home_media_feed : account_home_feed
+    feed.get(
       limit_param(DEFAULT_STATUSES_LIMIT),
       params[:max_id],
       params[:since_id],
@@ -35,6 +36,10 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
   def account_home_feed
     HomeFeed.new(current_account)
+  end
+
+  def account_home_media_feed
+    HomeMediaFeed.new(current_account)
   end
 
   def insert_pagination_headers

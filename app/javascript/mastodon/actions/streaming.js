@@ -71,7 +71,7 @@ const refreshHomeTimelineAndNotification = (dispatch, done) => {
       dispatch(fetchAnnouncements(done))))));
 };
 
-export const connectUserStream      = () => connectTimelineStream('home', 'user', refreshHomeTimelineAndNotification);
+export const connectUserStream      = ({ onlyMedia } = {}) => connectTimelineStream(`home${onlyMedia ? ':media' : ''}`, `user${onlyMedia ? ':media' : ''}`, refreshHomeTimelineAndNotification);
 export const connectCommunityStream = ({ onlyMedia } = {}) => connectTimelineStream(`community${onlyMedia ? ':media' : ''}`, `public:local${onlyMedia ? ':media' : ''}`);
 export const connectPublicStream    = ({ onlyMedia, onlyRemote } = {}) => connectTimelineStream(`public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`, `public${onlyRemote ? ':remote' : ''}${onlyMedia ? ':media' : ''}`);
 export const connectHashtagStream   = (id, tag, accept) => connectTimelineStream(`hashtag:${id}`, `hashtag&tag=${tag}`, null, accept);

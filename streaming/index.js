@@ -516,7 +516,8 @@ const startWorker = (workerId) => {
   app.use(errorMiddleware);
 
   app.get('/api/v1/streaming/user', (req, res) => {
-    const channel = `timeline:${req.accountId}`;
+    const onlyMedia = req.query.only_media === '1' || req.query.only_media === 'true';
+    const channel = onlyMedia ? `timeline:${req.accountId}:media` : `timeline:${req.accountId}`;
     streamFrom(channel, req, streamToHttp(req, res), streamHttpEnd(req, subscriptionHeartbeat(channel)));
   });
 
@@ -598,6 +599,10 @@ const startWorker = (workerId) => {
     switch(location.query.stream) {
     case 'user':
       channel = `timeline:${req.accountId}`;
+      streamFrom(channel, req, streamToWs(req, ws), streamWsEnd(req, ws, subscriptionHeartbeat(channel)));
+      break;
+    case 'user:media':
+      channel = `timeline:${req.accountId}:media`;
       streamFrom(channel, req, streamToWs(req, ws), streamWsEnd(req, ws, subscriptionHeartbeat(channel)));
       break;
     case 'user:notification':

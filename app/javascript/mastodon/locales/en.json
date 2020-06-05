@@ -187,6 +187,7 @@
   "home.column_settings.basic": "Basic",
   "home.column_settings.show_reblogs": "Show boosts",
   "home.column_settings.show_replies": "Show replies",
+  "home.column_settings.media_only": "Media only",
   "home.hide_announcements": "Hide announcements",
   "home.show_announcements": "Show announcements",
   "intervals.full.days": "{number, plural, one {# day} other {# days}}",

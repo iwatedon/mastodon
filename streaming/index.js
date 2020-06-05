@@ -516,8 +516,21 @@ const startWorker = (workerId) => {
   app.use(errorMiddleware);
 
   app.get('/api/v1/streaming/user', (req, res) => {
-    const channel = `timeline:${req.accountId}`;
-    streamFrom(channel, req, streamToHttp(req, res), streamHttpEnd(req, subscriptionHeartbeat(channel)));
+    (async () => {
+      const client = await pgPool.connect();
+      try {
+        let onlyMediaSetting = false;
+        const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+        if (result.rows.length > 0) {
+          onlyMediaSetting = true;
+        }
+        const onlyMedia = (req.query.only_media === undefined && onlyMediaSetting) || req.query.only_media === '1' || req.query.only_media === 'true';
+        const channel = onlyMedia ? `timeline:${req.accountId}:media` : `timeline:${req.accountId}`;
+        streamFrom(channel, req, streamToHttp(req, res), streamHttpEnd(req, subscriptionHeartbeat(channel)));
+      } finally {
+        client.release();
+      }
+    })();
   });
 
   app.get('/api/v1/streaming/user/notification', (req, res) => {
@@ -597,7 +610,28 @@ const startWorker = (workerId) => {
 
     switch(location.query.stream) {
     case 'user':
+      (async () => {
+        const client = await pgPool.connect();
+        try {
+          let onlyMediaSetting = false;
+          const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+          if (result.rows.length > 0) {
+            onlyMediaSetting = true;
+          }
+          const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
+          channel = onlyMedia ? `timeline:${req.accountId}:media` : `timeline:${req.accountId}`;
+          streamFrom(channel, req, streamToWs(req, ws), streamWsEnd(req, ws, subscriptionHeartbeat(channel)));
+        } finally {
+          client.release();
+        }
+      })();
+      break;
+    case 'user:all':
       channel = `timeline:${req.accountId}`;
+      streamFrom(channel, req, streamToWs(req, ws), streamWsEnd(req, ws, subscriptionHeartbeat(channel)));
+      break;
+    case 'user:media':
+      channel = `timeline:${req.accountId}:media`;
       streamFrom(channel, req, streamToWs(req, ws), streamWsEnd(req, ws, subscriptionHeartbeat(channel)));
       break;
     case 'user:notification':

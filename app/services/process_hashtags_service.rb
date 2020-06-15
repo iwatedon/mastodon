@@ -10,8 +10,9 @@ class ProcessHashtagsService < BaseService
 
     # default hashtag
     default_hashtag = ENV['X_DEFAULT_HASHTAG']
+    media_only = ENV['X_DEFAULT_HASHTAG_MEDIA_ONLY'] == 'true'
     if default_hashtag && @status.visibility == 'public' && @status.local? && !@status.reply?
-      @raw_tags << default_hashtag
+      @raw_tags << default_hashtag unless media_only && @status.media_attachments.none?
     end
 
     assign_tags!

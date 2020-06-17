@@ -141,9 +141,7 @@ export default function notifications(state = initialState, action) {
   case TIMELINE_DELETE:
     return deleteByStatus(state, action.id);
   case TIMELINE_DISCONNECT:
-    return action.timeline === 'home' ?
-      state.update(action.usePendingItems ? 'pendingItems' : 'items', items => items.first() ? items.unshift(null) : items) :
-      state;
+    return state;
   case NOTIFICATIONS_MOUNT:
     return state.set('mounted', true);
   case NOTIFICATIONS_UNMOUNT:

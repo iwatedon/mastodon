@@ -52,7 +52,14 @@ module ApplicationHelper
   end
 
   def favicon_path
-    env_suffix = Rails.env.production? ? '' : '-dev'
+    env_suffix =
+      if ENV['LOCAL_DOMAIN'] == 'gochisou.photo'
+        '-gochisou'
+      elsif Rails.env.production?
+        ''
+      else
+        '-dev'
+      end
     "/favicon#{env_suffix}.ico"
   end
 

@@ -95,6 +95,18 @@ module ApplicationHelper
     end
   end
 
+  def favicon_name
+    env_suffix =
+      if ENV['LOCAL_DOMAIN'] == 'gochisou.photo'
+        '-gochisou'
+      elsif Rails.env.production?
+        ''
+      else
+        '-dev'
+      end
+    "favicon#{env_suffix}.ico"
+  end
+
   def title
     Rails.env.production? ? site_title : "#{site_title} (Dev)"
   end

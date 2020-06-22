@@ -50,6 +50,7 @@ en:
         setting_show_application: The application you use to toot will be displayed in the detailed view of your toots
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
+        setting_x_only_media_on_home_timeline: Show only media on home timeline.
         username: Your username will be unique on %{domain}
         whole_word: When the keyword or phrase is alphanumeric only, it will only be applied if it matches the whole word
       domain_allow:
@@ -150,6 +151,7 @@ en:
         setting_unfollow_modal: Show confirmation dialog before unfollowing someone
         setting_use_blurhash: Show colorful gradients for hidden media
         setting_use_pending_items: Slow mode
+        setting_x_only_media_on_home_timeline: Media only mode on home timeline.
         severity: Severity
         sign_in_token_attempt: Security code
         type: Import type

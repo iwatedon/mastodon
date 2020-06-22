@@ -516,7 +516,26 @@ const startWorker = (workerId) => {
   app.use(errorMiddleware);
 
   app.get('/api/v1/streaming/user', (req, res) => {
-    const onlyMedia = req.query.only_media === '1' || req.query.only_media === 'true';
+    let onlyMediaSetting = false;
+    pgPool.connect((err, client, done) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value like \'%true%\'', [req.accountId], (err, result) => {
+        done();
+        if (err) {
+          next(err);
+          return;
+        }
+        if (result.rows.length > 0) {
+          onlyMediaSetting = true;
+        }
+        next();
+      });
+    });
+
+    const onlyMedia = (req.query.only_media === undefined && onlyMediaSetting) || req.query.only_media === '1' || req.query.only_media === 'true';
     const channel = onlyMedia ? `timeline:${req.accountId}:media` : `timeline:${req.accountId}`;
     streamFrom(channel, req, streamToHttp(req, res), streamHttpEnd(req, subscriptionHeartbeat(channel)));
   });

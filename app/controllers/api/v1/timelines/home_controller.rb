@@ -25,7 +25,17 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   end
 
   def home_statuses
-    feed = truthy_param?(:only_media) ? account_home_media_feed : account_home_feed
+    feed = if params[:only_media].nil?
+             if current_account.user.setting_x_only_media_on_home_timeline
+               account_home_media_feed
+             else
+               account_home_feed
+             end
+           elsif truthy_param?(:only_media)
+             account_home_media_feed
+           else
+             account_home_feed
+           end
     feed.get(
       limit_param(DEFAULT_STATUSES_LIMIT),
       params[:max_id],

@@ -46,9 +46,9 @@ class ColumnSettings extends PureComponent {
   onSelect = mode => value => {
     const oldValue = this.tags(mode);
 
-    // Prevent changes that add more than 4 tags, but allow removing
+    // Prevent changes that add more than 30 tags, but allow removing
     // tags that were already added before
-    if ((value.length > 4) && !(value < oldValue)) {
+    if ((value.length > 30) && !(value < oldValue)) {
       return;
     }
 

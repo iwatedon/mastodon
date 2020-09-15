@@ -39,6 +39,7 @@ class UserSettingsDecorator
     user.settings['trends']              = trends_preference if change?('setting_trends')
     user.settings['crop_images']         = crop_images_preference if change?('setting_crop_images')
     user.settings['x_only_media_on_home_timeline'] = x_only_media_on_home_timeline if change?('setting_x_only_media_on_home_timeline')
+    user.settings['x_hide_bot_statuses_on_federated_timeline'] = x_hide_bot_statuses_on_federated_timeline if change?('setting_x_hide_bot_statuses_on_federated_timeline')
   end
 
   def merged_notification_emails
@@ -135,6 +136,10 @@ class UserSettingsDecorator
 
   def x_only_media_on_home_timeline
     boolean_cast_setting 'setting_x_only_media_on_home_timeline'
+  end
+
+  def x_hide_bot_statuses_on_federated_timeline
+    boolean_cast_setting 'setting_x_hide_bot_statuses_on_federated_timeline'
   end
 
   def boolean_cast_setting(key)

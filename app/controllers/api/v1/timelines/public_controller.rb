@@ -29,6 +29,11 @@ class Api::V1::Timelines::PublicController < Api::BaseController
       params_slice(:max_id, :since_id, :min_id)
     )
 
+    if current_account.user.setting_x_hide_bot_statuses_on_federated_timeline && !truthy_param?(:local)
+      statuses = statuses.joins(:account).where('accounts.actor_type' => nil)
+      statuses = statuses.or(statuses.where('accounts.actor_type' => 'Person'))
+    end
+
     if truthy_param?(:only_media)
       # `SELECT DISTINCT id, updated_at` is too slow, so pluck ids at first, and then select id, updated_at with ids.
       status_ids = statuses.joins(:media_attachments).distinct(:id).pluck(:id)

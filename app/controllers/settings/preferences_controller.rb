@@ -59,6 +59,7 @@ class Settings::PreferencesController < Settings::BaseController
       :setting_trends,
       :setting_crop_images,
       :setting_x_only_media_on_home_timeline,
+      :setting_x_hide_bot_statuses_on_federated_timeline,
       notification_emails: %i(follow follow_request reblog favourite mention digest report pending_account trending_tag),
       interactions: %i(must_be_follower must_be_following must_be_following_dm)
     )

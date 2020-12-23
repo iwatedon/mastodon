@@ -119,6 +119,10 @@ module HasUserSettings
     settings['notification_emails.trends']
   end
 
+  def setting_x_only_media_on_home_timeline
+    settings['x_only_media_on_home_timeline']
+  end
+
   def aggregates_reblogs?
     settings['aggregate_reblogs']
   end

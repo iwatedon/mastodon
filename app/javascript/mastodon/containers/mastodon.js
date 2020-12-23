@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import { Provider as ReduxProvider } from 'react-redux';
+import { Provider as ReduxProvider, connect } from 'react-redux';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
 import configureStore from 'mastodon/store/configureStore';
@@ -35,10 +35,15 @@ const createIdentityContext = state => ({
   permissions: state.role ? state.role.permissions : 0,
 });
 
-export default class Mastodon extends React.PureComponent {
+const mapStateToProps = state => ({
+  onlyMedia: state.getIn(['settings', 'home', 'other', 'onlyMedia'])
+});
+
+@connect(mapStateToProps)
+class MastodonMount extends React.PureComponent {
 
   static propTypes = {
-    locale: PropTypes.string.isRequired,
+    onlyMedia: PropTypes.bool
   };
 
   static childContextTypes = {
@@ -60,7 +65,18 @@ export default class Mastodon extends React.PureComponent {
 
   componentDidMount() {
     if (this.identity.signedIn) {
-      this.disconnect = store.dispatch(connectUserStream());
+      const { onlyMedia } = this.props;
+      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.identity.signedIn) {
+      const { onlyMedia } = this.props;
+      if (prevProps.onlyMedia !== onlyMedia) {
+        this.disconnect();
+        this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+      }
     }
   }
 
@@ -76,20 +92,34 @@ export default class Mastodon extends React.PureComponent {
   }
 
   render () {
+    return (
+      <ErrorBoundary>
+        <BrowserRouter>
+          <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
+            <Route path='/' component={UI} />
+          </ScrollContext>
+        </BrowserRouter>
+
+        <Helmet defaultTitle={title} titleTemplate={`%s - ${title}`} />
+      </ErrorBoundary>
+    );
+  }
+
+}
+
+export default class Mastodon extends React.PureComponent {
+
+  static propTypes = {
+    locale: PropTypes.string.isRequired,
+  };
+
+  render () {
     const { locale } = this.props;
 
     return (
       <IntlProvider locale={locale} messages={messages}>
         <ReduxProvider store={store}>
-          <ErrorBoundary>
-            <BrowserRouter>
-              <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
-                <Route path='/' component={UI} />
-              </ScrollContext>
-            </BrowserRouter>
-
-            <Helmet defaultTitle={title} titleTemplate={`%s - ${title}`} />
-          </ErrorBoundary>
+          <MastodonMount />
         </ReduxProvider>
       </IntlProvider>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import configureStore from '../store/configureStore';
 import { BrowserRouter, Route } from 'react-router-dom';
@@ -28,10 +28,15 @@ const createIdentityContext = state => ({
   accessToken: state.meta.access_token,
 });
 
-export default class Mastodon extends React.PureComponent {
+const mapStateToProps = state => ({
+  onlyMedia: state.getIn(['settings', 'home', 'other', 'onlyMedia'])
+});
+
+@connect(mapStateToProps)
+class MastodonMount extends React.PureComponent {
 
   static propTypes = {
-    locale: PropTypes.string.isRequired,
+    onlyMedia: PropTypes.bool
   };
 
   static childContextTypes = {
@@ -52,7 +57,18 @@ export default class Mastodon extends React.PureComponent {
 
   componentDidMount() {
     if (this.identity.signedIn) {
-      this.disconnect = store.dispatch(connectUserStream());
+      const { onlyMedia } = this.props;
+      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.identity.signedIn) {
+      const { onlyMedia } = this.props;
+      if (prevProps.onlyMedia !== onlyMedia) {
+        this.disconnect();
+        this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+      }
     }
   }
 
@@ -68,17 +84,31 @@ export default class Mastodon extends React.PureComponent {
   }
 
   render () {
+    return (
+      <BrowserRouter basename='/web'>
+        <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
+          <Route path='/' component={UI} />
+        </ScrollContext>
+      </BrowserRouter>
+    );
+  }
+
+}
+
+export default class Mastodon extends React.PureComponent {
+
+  static propTypes = {
+    locale: PropTypes.string.isRequired,
+  };
+
+  render () {
     const { locale } = this.props;
 
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
           <ErrorBoundary>
-            <BrowserRouter basename='/web'>
-              <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
-                <Route path='/' component={UI} />
-              </ScrollContext>
-            </BrowserRouter>
+            <MastodonMount />
           </ErrorBoundary>
         </Provider>
       </IntlProvider>

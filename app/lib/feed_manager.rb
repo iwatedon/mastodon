@@ -78,7 +78,9 @@ class FeedManager
     return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
     trim(:home, account.id)
+
     PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update }) if push_update_required?("timeline:#{account.id}")
+    PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}:media", { 'update' => update }) if push_update_required?("timeline:#{account.id}", only_media: true) && status.proper.media_attachments.any?
     true
   end
 
@@ -90,7 +92,10 @@ class FeedManager
   def unpush_from_home(account, status, update: false)
     return false unless remove_from_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
-    redis.publish("timeline:#{account.id}", Oj.dump(event: :delete, payload: status.id.to_s)) unless update
+    unless update
+      redis.publish("timeline:#{account.id}", Oj.dump(event: :delete, payload: status.id.to_s))
+      redis.publish("timeline:#{account.id}:media", Oj.dump(event: :delete, payload: status.id.to_s)) if status.proper.media_attachments.any?
+    end
     true
   end
 
@@ -399,9 +404,11 @@ class FeedManager
   def trim(type, timeline_id)
     timeline_key = key(type, timeline_id)
     reblog_key   = key(type, timeline_id, 'reblogs')
+    media_key    = key(type, timeline_id, 'media')
 
     # Remove any items past the MAX_ITEMS'th entry in our feed
     redis.zremrangebyrank(timeline_key, 0, -(FeedManager::MAX_ITEMS + 1))
+    redis.zremrangebyrank(media_key,    0, -(FeedManager::MAX_ITEMS + 1))
 
     # Get the score of the REBLOG_FALLOFF'th item in our feed, and stop
     # tracking anything after it for deduplication purposes.
@@ -426,9 +433,11 @@ class FeedManager
   # Check if there is a streaming API client connected
   # for the given feed
   # @param [String] timeline_key
+  # @param [Boolean] only_media
   # @return [Boolean]
-  def push_update_required?(timeline_key)
-    redis.exists?("subscribed:#{timeline_key}")
+  def push_update_required?(timeline_key, only_media: false)
+    channel = only_media ? "subscribed:#{timeline_key}:media" : "subscribed:#{timeline_key}"
+    redis.exists?(channel)
   end
 
   # Check if the account is blocking or muting any of the given accounts
@@ -536,6 +545,7 @@ class FeedManager
   def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
     timeline_key = key(timeline_type, account_id)
     reblog_key   = key(timeline_type, account_id, 'reblogs')
+    media_key    = key(timeline_type, account_id, 'media')
 
     if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
       # If the original status or a reblog of it is within
@@ -551,6 +561,7 @@ class FeedManager
         # This is not something we've already seen reblogged, so we
         # can just add it to the feed (and note that we're reblogging it).
         redis.zadd(timeline_key, status.id, status.id)
+        redis.zadd(media_key, status.id, status.id) if status.proper.media_attachments.any?
       else
         # Another reblog of the same status was already in the
         # REBLOG_FALLOFF most recent statuses, so we note that this
@@ -567,6 +578,7 @@ class FeedManager
       return false unless redis.zscore(reblog_key, status.id).nil?
 
       redis.zadd(timeline_key, status.id, status.id)
+      redis.zadd(media_key, status.id, status.id) if status.proper.media_attachments.any?
     end
 
     true

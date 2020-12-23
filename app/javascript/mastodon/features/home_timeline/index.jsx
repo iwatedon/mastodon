@@ -70,19 +70,27 @@ const homeTooSlow = createSelector([
   )
 );
 
-const mapStateToProps = state => ({
-  hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
-  isPartial: state.getIn(['timelines', 'home', 'isPartial']),
-  hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
-  unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
-  showAnnouncements: state.getIn(['announcements', 'show']),
-  tooSlow: homeTooSlow(state),
-});
+const mapStateToProps = state => {
+  const onlyMedia = state.getIn(['settings', 'home', 'other', 'onlyMedia']);
+  return {
+    hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
+    isPartial: state.getIn(['timelines', 'home', 'isPartial']),
+    hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
+    unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
+    showAnnouncements: state.getIn(['announcements', 'show']),
+    tooSlow: homeTooSlow(state),
+    onlyMedia: onlyMedia,
+  };
+};
 
 class HomeTimeline extends PureComponent {
 
   static contextTypes = {
     identity: PropTypes.object,
+  }
+
+  static defaultProps = {
+    onlyMedia: false,
   };
 
   static propTypes = {
@@ -96,15 +104,16 @@ class HomeTimeline extends PureComponent {
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
     tooSlow: PropTypes.bool,
+    onlyMedia: PropTypes.bool,
   };
 
   handlePin = () => {
-    const { columnId, dispatch } = this.props;
+    const { columnId, dispatch, onlyMedia } = this.props;
 
     if (columnId) {
       dispatch(removeColumn(columnId));
     } else {
-      dispatch(addColumn('HOME', {}));
+      dispatch(addColumn('HOME', {other: { onlyMedia }}));
     }
   };
 
@@ -122,16 +131,24 @@ class HomeTimeline extends PureComponent {
   };
 
   handleLoadMore = maxId => {
-    this.props.dispatch(expandHomeTimeline({ maxId }));
-  };
+    const { onlyMedia } = this.props;
+    this.props.dispatch(expandHomeTimeline({ maxId, onlyMedia }));
+  }
 
   componentDidMount () {
-    setTimeout(() => this.props.dispatch(fetchAnnouncements()), 700);
-    this._checkIfReloadNeeded(false, this.props.isPartial);
+    const { dispatch, onlyMedia, isPartial } = this.props;
+    setTimeout(() => dispatch(fetchAnnouncements()), 700);
+    dispatch(expandHomeTimeline({ onlyMedia }));
+    this._checkIfReloadNeeded(false, isPartial);
   }
 
   componentDidUpdate (prevProps) {
-    this._checkIfReloadNeeded(prevProps.isPartial, this.props.isPartial);
+    const { dispatch, onlyMedia, isPartial } = this.props;
+    if (prevProps.onlyMedia !== onlyMedia) {
+      dispatch(expandHomeTimeline({ onlyMedia }));
+    } else {
+      this._checkIfReloadNeeded(prevProps.isPartial, isPartial);
+    }
   }
 
   componentWillUnmount () {
@@ -139,13 +156,13 @@ class HomeTimeline extends PureComponent {
   }
 
   _checkIfReloadNeeded (wasPartial, isPartial) {
-    const { dispatch } = this.props;
+    const { dispatch, onlyMedia } = this.props;
 
     if (wasPartial === isPartial) {
       return;
     } else if (!wasPartial && isPartial) {
       this.polling = setInterval(() => {
-        dispatch(expandHomeTimeline());
+        dispatch(expandHomeTimeline({ onlyMedia }));
       }, 3000);
     } else if (wasPartial && !isPartial) {
       this._stopPolling();
@@ -165,7 +182,7 @@ class HomeTimeline extends PureComponent {
   };
 
   render () {
-    const { intl, hasUnread, columnId, multiColumn, tooSlow, hasAnnouncements, unreadAnnouncements, showAnnouncements } = this.props;
+    const { intl, hasUnread, columnId, multiColumn, tooSlow, hasAnnouncements, unreadAnnouncements, showAnnouncements, onlyMedia } = this.props;
     const pinned = !!columnId;
     const { signedIn } = this.context.identity;
     const banners = [];
@@ -218,7 +235,7 @@ class HomeTimeline extends PureComponent {
             trackScroll={!pinned}
             scrollKey={`home_timeline-${columnId}`}
             onLoadMore={this.handleLoadMore}
-            timelineId='home'
+            timelineId={`home${onlyMedia ? ':media' : ''}`}
             emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up.' />}
             bindToDocument={!multiColumn}
           />

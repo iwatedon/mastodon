@@ -15,6 +15,7 @@ class UserSettings
   setting :default_language, default: nil
   setting :default_sensitive, default: false
   setting :default_privacy, default: nil, in: %w(public unlisted private)
+  setting :x_only_media_on_home_timeline, default: false
 
   setting_inverse_alias :indexable, :noindex
 

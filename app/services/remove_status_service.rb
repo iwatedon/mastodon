@@ -83,6 +83,7 @@ class RemoveStatusService < BaseService
 
     @status.active_mentions.find_each do |mention|
       redis.publish("timeline:#{mention.account_id}", @payload)
+      redis.publish("timeline:#{mention.account.id}:media", @payload) if @status.media_attachments.any?
     end
   end
 

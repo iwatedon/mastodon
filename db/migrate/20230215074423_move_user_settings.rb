@@ -39,6 +39,7 @@ class MoveUserSettings < ActiveRecord::Migration[6.1]
       appeal: 'notification_emails.appeal',
     }.freeze,
     always_send_emails: 'always_send_emails',
+    x_only_media_on_home_timeline: 'x_only_media_on_home_timeline',
     interactions: {
       must_be_follower: 'interactions.must_be_follower',
       must_be_following: 'interactions.must_be_following',

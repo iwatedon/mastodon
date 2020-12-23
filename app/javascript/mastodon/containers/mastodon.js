@@ -1,5 +1,5 @@
 import React from 'react';
-import { Provider } from 'react-redux';
+import { connect, Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import configureStore from '../store/configureStore';
 import { BrowserRouter, Route } from 'react-router-dom';
@@ -28,10 +28,20 @@ export default class Mastodon extends React.PureComponent {
 
   static propTypes = {
     locale: PropTypes.string.isRequired,
+    onlyMedia: PropTypes.bool,
   };
 
   componentDidMount() {
-    this.disconnect = store.dispatch(connectUserStream());
+    const { onlyMedia } = this.props;
+    this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+  }
+
+  componentDidUpdate (prevProps) {
+    const { onlyMedia } = this.props;
+    if (prevProps.onlyMedia !== onlyMedia) {
+      this.disconnect();
+      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+    }
   }
 
   componentWillUnmount () {

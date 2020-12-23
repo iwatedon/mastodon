@@ -53,6 +53,7 @@ class CustomFilter < ApplicationRecord
   def remove_cache
     Rails.cache.delete("filters:#{account_id}")
     redis.publish("timeline:#{account_id}", Oj.dump(event: :filters_changed))
+    redis.publish("timeline:#{account_id}:media", Oj.dump(event: :filters_changed))
   end
 
   def context_must_be_valid

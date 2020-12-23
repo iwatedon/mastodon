@@ -65,6 +65,19 @@ export const ColumnSettings: React.FC = () => {
               />
             }
           />
+
+          <SettingToggle
+            prefix='home_timeline'
+            settings={settings}
+            settingPath={['other', 'onlyMedia']}
+            onChange={onChange}
+            label={
+              <FormattedMessage
+                id='home.column_settings.media_only'
+                defaultMessage='Media only'
+              />
+            }
+          />
         </div>
       </section>
     </div>

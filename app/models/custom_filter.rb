@@ -117,6 +117,7 @@ class CustomFilter < ApplicationRecord
     Rails.cache.delete("filters:v3:#{account_id}")
     redis.publish("timeline:#{account_id}", { event: :filters_changed }.to_json)
     redis.publish("timeline:system:#{account_id}", { event: :filters_changed }.to_json)
+    redis.publish("timeline:#{account_id}:media", { event: :filters_changed }.to_json)
   end
 
   private

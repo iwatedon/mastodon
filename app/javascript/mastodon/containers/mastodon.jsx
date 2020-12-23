@@ -35,7 +35,15 @@ export default class Mastodon extends PureComponent {
 
   componentDidMount() {
     if (this.identity.signedIn) {
-      this.disconnect = store.dispatch(connectUserStream());
+
+      const disconnects = [
+        store.dispatch(connectUserStream({ onlyMedia: true })),
+        store.dispatch(connectUserStream({ onlyMedia: false })),
+      ];
+
+      this.disconnect = () => {
+        disconnects.forEach((d) => d());
+      };
     }
   }
 

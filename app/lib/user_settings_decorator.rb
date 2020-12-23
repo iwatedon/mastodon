@@ -39,6 +39,7 @@ class UserSettingsDecorator
     user.settings['use_pending_items']   = use_pending_items_preference if change?('setting_use_pending_items')
     user.settings['trends']              = trends_preference if change?('setting_trends')
     user.settings['crop_images']         = crop_images_preference if change?('setting_crop_images')
+    user.settings['x_only_media_on_home_timeline'] = x_only_media_on_home_timeline if change?('setting_x_only_media_on_home_timeline')
   end
 
   def merged_notification_emails
@@ -135,6 +136,10 @@ class UserSettingsDecorator
 
   def crop_images_preference
     boolean_cast_setting 'setting_crop_images'
+  end
+
+  def x_only_media_on_home_timeline
+    boolean_cast_setting 'setting_x_only_media_on_home_timeline'
   end
 
   def boolean_cast_setting(key)

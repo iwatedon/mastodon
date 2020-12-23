@@ -112,10 +112,11 @@ const refreshHomeTimelineAndNotification = (dispatch, done) => {
 };
 
 /**
+ * @param {boolean} [options.onlyMedia]
  * @return {function(): void}
  */
-export const connectUserStream = () =>
-  connectTimelineStream('home', 'user', {}, { fallback: refreshHomeTimelineAndNotification });
+export const connectUserStream = ({ onlyMedia } = {}) =>
+  connectTimelineStream(`home${onlyMedia ? ':media' : ''}`, `user${onlyMedia ? ':media' : ':all'}`, {}, { fallback: refreshHomeTimelineAndNotification });
 
 /**
  * @param {Object} options

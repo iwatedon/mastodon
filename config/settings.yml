@@ -33,6 +33,7 @@ defaults: &defaults
   captcha_enabled: false
   allow_referrer_origin: false
   landing_page: 'trends'
+  x_only_media_on_home_timeline: false
 
 development:
   <<: *defaults

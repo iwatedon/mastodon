@@ -159,10 +159,13 @@ async function refreshHomeTimelineAndNotification(dispatch) {
 }
 
 /**
+ * @param {boolean} [options.onlyMedia]
+ * @param root0
+ * @param root0.onlyMedia
  * @returns {function(): void}
  */
-export const connectUserStream = () =>
-  connectTimelineStream('home', 'user', {}, {
+export const connectUserStream = ({ onlyMedia } = {}) =>
+  connectTimelineStream(`home${onlyMedia ? ':media' : ''}`, `user${onlyMedia ? ':media' : ':all'}`, {}, {
     fallback: refreshHomeTimelineAndNotification,
     // @ts-expect-error
     fillGaps: fillHomeTimelineGaps

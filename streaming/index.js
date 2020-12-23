@@ -1038,8 +1038,8 @@ const startServer = async () => {
    * @param {Request} req
    * @returns {string[]}
    */
-  const channelsForUserStream = req => {
-    const arr = [`timeline:${req.accountId}`];
+  const channelsForUserStream = (req, onlyMedia = false) => {
+    const arr = onlyMedia ? [`timeline:${req.accountId}:media`] : [`timeline:${req.accountId}`];
 
     if (isInScope(req, ['read', 'read:notifications'])) {
       arr.push(`timeline:${req.accountId}:notifications`);
@@ -1073,8 +1073,36 @@ const startServer = async () => {
 
     switch (name) {
     case 'user':
+      (async () => {
+        const client = await pgPool.connect();
+        try {
+          let onlyMediaSetting = false;
+          const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+          if (result.rows.length > 0) {
+            onlyMediaSetting = true;
+          }
+          const location = url.parse(req.url, true);
+          const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
+          resolve({
+            channelIds: channelsForUserStream(req, onlyMedia),
+            options: { needsFiltering: false },
+          });
+        } finally {
+          client.release();
+        }
+      })();
+
+      break;
+    case 'user:all':
       resolve({
         channelIds: channelsForUserStream(req),
+        options: { needsFiltering: false },
+      });
+
+      break;
+    case 'user:media':
+      resolve({
+        channelIds: channelsForUserStream(req, true),
         options: { needsFiltering: false },
       });
 

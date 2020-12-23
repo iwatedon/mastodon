@@ -784,8 +784,44 @@ const startWorker = (workerId) => {
   const channelNameToIds = (req, name, params) => new Promise((resolve, reject) => {
     switch(name) {
     case 'user':
+      (async () => {
+        const client = await pgPool.connect();
+        try {
+          let onlyMediaSetting = false;
+          const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+          if (result.rows.length > 0) {
+            onlyMediaSetting = true;
+          }
+          const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
+          channel = [ onlyMedia ? `timeline:${req.accountId}:media` : `timeline:${req.accountId}` ];
+          if (req.deviceId) {
+            channel.push(`timeline:${req.accountId}:${req.deviceId}`);
+          }
+
+	  resolve({
+            channelIds: channel,
+            options: { needsFiltering: false, notificationOnly: false },
+          });
+        } finally {
+          client.release();
+        }
+      })();
+
+      break;
+    case 'user:all':
+      channel = [`timeline:${req.accountId}`];
+      if (req.deviceId) {
+        channel.push(`timeline:${req.accountId}:${req.deviceId}`);
+      }
       resolve({
-        channelIds: req.deviceId ? [`timeline:${req.accountId}`, `timeline:${req.accountId}:${req.deviceId}`] : [`timeline:${req.accountId}`],
+        channelIds: channel,
+        options: { needsFiltering: false, notificationOnly: false },
+      });
+
+      break;
+    case 'user:media':
+      resolve({
+        channelIds: [`timeline:${req.accountId}:media`],
         options: { needsFiltering: false, notificationOnly: false },
       });
 

@@ -897,8 +897,8 @@ const startWorker = async (workerId) => {
    * @param {any} req
    * @return {string[]}
    */
-  const channelsForUserStream = req => {
-    const arr = [`timeline:${req.accountId}`];
+  const channelsForUserStream = (req, onlyMedia = false) => {
+    const arr = onlyMedia ? [`timeline:${req.accountId}:media`] : [`timeline:${req.accountId}`];
 
     if (isInScope(req, ['crypto']) && req.deviceId) {
       arr.push(`timeline:${req.accountId}:${req.deviceId}`);
@@ -948,8 +948,35 @@ const startWorker = async (workerId) => {
   const channelNameToIds = (req, name, params) => new Promise((resolve, reject) => {
     switch (name) {
     case 'user':
+      (async () => {
+        const client = await pgPool.connect();
+        try {
+          let onlyMediaSetting = false;
+          const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+          if (result.rows.length > 0) {
+            onlyMediaSetting = true;
+          }
+          const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
+          resolve({
+            channelIds: channelsForUserStream(req, onlyMedia),
+            options: { needsFiltering: false },
+          });
+        } finally {
+          client.release();
+        }
+      })();
+
+      break;
+    case 'user:all':
       resolve({
         channelIds: channelsForUserStream(req),
+        options: { needsFiltering: false },
+      });
+
+      break;
+    case 'user:media':
+      resolve({
+        channelIds: channelsForUserStream(req, true),
         options: { needsFiltering: false },
       });
 

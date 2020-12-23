@@ -27,6 +27,7 @@ store.dispatch(hydrateAction);
 store.dispatch(fetchCustomEmojis());
 
 const mapStateToProps = state => ({
+  onlyMedia: state.getIn(['settings', 'home', 'other', 'onlyMedia']),
   showIntroduction: state.getIn(['settings', 'introductionVersion'], 0) < INTRODUCTION_VERSION,
 });
 
@@ -34,8 +35,29 @@ const mapStateToProps = state => ({
 class MastodonMount extends React.PureComponent {
 
   static propTypes = {
+    onlyMedia: PropTypes.bool,
     showIntroduction: PropTypes.bool,
   };
+
+  componentDidMount() {
+    const { onlyMedia } = this.props;
+    this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+  }
+
+  componentDidUpdate (prevProps) {
+    const { onlyMedia } = this.props;
+    if (prevProps.onlyMedia !== onlyMedia) {
+      this.disconnect();
+      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+    }
+  }
+
+  componentWillUnmount () {
+    if (this.disconnect) {
+      this.disconnect();
+      this.disconnect = null;
+    }
+  }
 
   shouldUpdateScroll (_, { location }) {
     return location.state !== previewMediaState && location.state !== previewVideoState;
@@ -64,17 +86,6 @@ export default class Mastodon extends React.PureComponent {
   static propTypes = {
     locale: PropTypes.string.isRequired,
   };
-
-  componentDidMount() {
-    this.disconnect = store.dispatch(connectUserStream());
-  }
-
-  componentWillUnmount () {
-    if (this.disconnect) {
-      this.disconnect();
-      this.disconnect = null;
-    }
-  }
 
   render () {
     const { locale } = this.props;

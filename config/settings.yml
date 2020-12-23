@@ -35,6 +35,7 @@ defaults: &defaults
   allow_referrer_origin: false
   landing_page: 'trends'
   wrapstodon: true
+  x_only_media_on_home_timeline: false
 
 development:
   <<: *defaults

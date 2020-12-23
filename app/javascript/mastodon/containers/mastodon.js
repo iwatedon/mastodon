@@ -1,10 +1,11 @@
 import React from 'react';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import configureStore from '../store/configureStore';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
 import UI from '../features/ui';
+import Introduction from '../features/introduction';
 import { fetchCustomEmojis } from '../actions/custom_emojis';
 import { hydrateStore } from '../actions/store';
 import { connectUserStream } from '../actions/streaming';
@@ -22,14 +23,28 @@ const hydrateAction = hydrateStore(initialState);
 store.dispatch(hydrateAction);
 store.dispatch(fetchCustomEmojis());
 
-export default class Mastodon extends React.PureComponent {
+const mapStateToProps = state => ({
+  onlyMedia: state.getIn(['settings', 'home', 'other', 'onlyMedia'])
+});
+
+@connect(mapStateToProps)
+class MastodonMount extends React.PureComponent {
 
   static propTypes = {
-    locale: PropTypes.string.isRequired,
+    onlyMedia: PropTypes.bool
   };
 
   componentDidMount() {
-    this.disconnect = store.dispatch(connectUserStream());
+    const { onlyMedia } = this.props;
+    this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+  }
+
+  componentDidUpdate (prevProps) {
+    const { onlyMedia } = this.props;
+    if (prevProps.onlyMedia !== onlyMedia) {
+      this.disconnect();
+      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
+    }
   }
 
   componentWillUnmount () {
@@ -44,17 +59,31 @@ export default class Mastodon extends React.PureComponent {
   }
 
   render () {
+    return (
+      <BrowserRouter basename='/web'>
+        <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
+          <Route path='/' component={UI} />
+        </ScrollContext>
+      </BrowserRouter>
+    );
+  }
+
+}
+
+export default class Mastodon extends React.PureComponent {
+
+  static propTypes = {
+    locale: PropTypes.string.isRequired,
+  };
+
+  render () {
     const { locale } = this.props;
 
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
           <ErrorBoundary>
-            <BrowserRouter basename='/web'>
-              <ScrollContext shouldUpdateScroll={this.shouldUpdateScroll}>
-                <Route path='/' component={UI} />
-              </ScrollContext>
-            </BrowserRouter>
+            <MastodonMount />
           </ErrorBoundary>
         </Provider>
       </IntlProvider>

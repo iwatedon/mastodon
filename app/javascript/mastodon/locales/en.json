@@ -429,6 +429,7 @@
   "home.column_settings.show_quotes": "Show quotes",
   "home.column_settings.show_reblogs": "Show boosts",
   "home.column_settings.show_replies": "Show replies",
+  "home.column_settings.media_only": "Media only",
   "home.hide_announcements": "Hide announcements",
   "home.pending_critical_update.body": "Please update your Mastodon server as soon as possible!",
   "home.pending_critical_update.link": "See updates",

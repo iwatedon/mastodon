@@ -136,11 +136,11 @@ const refreshHomeTimelineAndNotification = (dispatch, done) => {
 };
 
 /**
- * @returns {function(): void}
+ * @param {boolean} [options.onlyMedia]
+ * @return {function(): void}
  */
-export const connectUserStream = () =>
-  // @ts-expect-error
-  connectTimelineStream('home', 'user', {}, { fallback: refreshHomeTimelineAndNotification, fillGaps: fillHomeTimelineGaps });
+export const connectUserStream = ({ onlyMedia } = {}) =>
+  connectTimelineStream(`home${onlyMedia ? ':media' : ''}`, `user${onlyMedia ? ':media' : ':all'}`, {}, { fallback: refreshHomeTimelineAndNotification, fillGaps: fillHomeTimelineGaps });
 
 /**
  * @param {Object} options

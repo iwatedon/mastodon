@@ -20,25 +20,17 @@ const messages = defineMessages({
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
 
-const mapStateToProps = state => {
-  const onlyMedia = state.getIn(['settings', 'home', 'other', 'onlyMedia']);
-  return {
-    hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
-    isPartial: state.getIn(['timelines', 'home', 'isPartial']),
-    hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
-    unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
-    showAnnouncements: state.getIn(['announcements', 'show']),
-    onlyMedia,
-  };
-};
+const mapStateToProps = state => ({
+  hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
+  isPartial: state.getIn(['timelines', 'home', 'isPartial']),
+  hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
+  unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
+  showAnnouncements: state.getIn(['announcements', 'show']),
+});
 
 export default @connect(mapStateToProps)
 @injectIntl
 class HomeTimeline extends React.PureComponent {
-
-  static defaultProps = {
-    onlyMedia: false,
-  };
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -51,16 +43,15 @@ class HomeTimeline extends React.PureComponent {
     hasAnnouncements: PropTypes.bool,
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
-    onlyMedia: PropTypes.bool,
   };
 
   handlePin = () => {
-    const { columnId, dispatch, onlyMedia } = this.props;
+    const { columnId, dispatch } = this.props;
 
     if (columnId) {
       dispatch(removeColumn(columnId));
     } else {
-      dispatch(addColumn('HOME', {other: { onlyMedia }}));
+      dispatch(addColumn('HOME', {}));
     }
   }
 
@@ -78,23 +69,16 @@ class HomeTimeline extends React.PureComponent {
   }
 
   handleLoadMore = maxId => {
-    const { onlyMedia } = this.props;
-    this.props.dispatch(expandHomeTimeline({ maxId, onlyMedia }));
+    this.props.dispatch(expandHomeTimeline({ maxId }));
   }
 
   componentDidMount () {
     setTimeout(() => this.props.dispatch(fetchAnnouncements()), 700);
-    this.props.dispatch(expandHomeTimeline({ this.props.onlyMedia }));
     this._checkIfReloadNeeded(false, this.props.isPartial);
   }
 
   componentDidUpdate (prevProps) {
-    const { dispatch, onlyMedia, isPartial } = this.props;
-    if (prevProps.onlyMedia !== onlyMedia) {
-      dispatch(expandHomeTimeline({ onlyMedia }));
-    } else {
-      this._checkIfReloadNeeded(prevProps.isPartial, isPartial);
-    }
+    this._checkIfReloadNeeded(prevProps.isPartial, this.props.isPartial);
   }
 
   componentWillUnmount () {
@@ -102,13 +86,13 @@ class HomeTimeline extends React.PureComponent {
   }
 
   _checkIfReloadNeeded (wasPartial, isPartial) {
-    const { dispatch, onlyMedia } = this.props;
+    const { dispatch } = this.props;
 
     if (wasPartial === isPartial) {
       return;
     } else if (!wasPartial && isPartial) {
       this.polling = setInterval(() => {
-        dispatch(expandHomeTimeline({ onlyMedia }));
+        dispatch(expandHomeTimeline());
       }, 3000);
     } else if (wasPartial && !isPartial) {
       this._stopPolling();
@@ -128,7 +112,7 @@ class HomeTimeline extends React.PureComponent {
   }
 
   render () {
-    const { intl, shouldUpdateScroll, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements, onlyMedia } = this.props;
+    const { intl, shouldUpdateScroll, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements } = this.props;
     const pinned = !!columnId;
 
     let announcementsButton = null;
@@ -168,7 +152,7 @@ class HomeTimeline extends React.PureComponent {
           trackScroll={!pinned}
           scrollKey={`home_timeline-${columnId}`}
           onLoadMore={this.handleLoadMore}
-          timelineId={`home${onlyMedia ? ':media' : ''}`}
+          timelineId='home'
           emptyMessage={<FormattedMessage id='empty_column.home' defaultMessage='Your home timeline is empty! Follow more people to fill it up. {suggestions}' values={{ suggestions: <Link to='/start'><FormattedMessage id='empty_column.home.suggestions' defaultMessage='See some suggestions' /></Link> }} />}
           shouldUpdateScroll={shouldUpdateScroll}
           bindToDocument={!multiColumn}

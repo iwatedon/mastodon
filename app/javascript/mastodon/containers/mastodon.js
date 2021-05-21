@@ -24,29 +24,14 @@ const hydrateAction = hydrateStore(initialState);
 store.dispatch(hydrateAction);
 store.dispatch(fetchCustomEmojis());
 
-const mapStateToProps = state => ({
-  onlyMedia: state.getIn(['settings', 'home', 'other', 'onlyMedia']),
-});
-
-@connect(mapStateToProps)
 export default class Mastodon extends React.PureComponent {
 
   static propTypes = {
     locale: PropTypes.string.isRequired,
-    onlyMedia: PropTypes.bool,
   };
 
   componentDidMount() {
-    const { onlyMedia } = this.props;
-    this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
-  }
-
-  componentDidUpdate (prevProps) {
-    const { onlyMedia } = this.props;
-    if (prevProps.onlyMedia !== onlyMedia) {
-      this.disconnect();
-      this.disconnect = store.dispatch(connectUserStream({ onlyMedia }));
-    }
+    this.disconnect = store.dispatch(connectUserStream());
   }
 
   componentWillUnmount () {

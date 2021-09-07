@@ -25,18 +25,7 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   end
 
   def home_statuses
-    feed = if params[:only_media].nil?
-             if current_account.user.setting_x_only_media_on_home_timeline
-               account_home_media_feed
-             else
-               account_home_feed
-             end
-           elsif truthy_param?(:only_media)
-             account_home_media_feed
-           else
-             account_home_feed
-           end
-    feed.get(
+    account_home_feed.get(
       limit_param(DEFAULT_STATUSES_LIMIT),
       params[:max_id],
       params[:since_id],
@@ -45,11 +34,17 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   end
 
   def account_home_feed
-    HomeFeed.new(current_account)
-  end
-
-  def account_home_media_feed
-    HomeMediaFeed.new(current_account)
+    if params[:only_media].nil?
+      if current_account.user.setting_x_only_media_on_home_timeline
+        HomeMediaFeed.new(current_account)
+      else
+        HomeFeed.new(current_account)
+      end
+    elsif truthy_param?(:only_media)
+      HomeMediaFeed.new(current_account)
+    else
+      HomeFeed.new(current_account)
+    end
   end
 
   def insert_pagination_headers

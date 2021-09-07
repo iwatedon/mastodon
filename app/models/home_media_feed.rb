@@ -9,4 +9,8 @@ class HomeMediaFeed < HomeFeed
   def key
     FeedManager.instance.key(@type, @id, @subtype)
   end
+
+  def regenerating?
+    redis.exists?("account:#{@account.id}:media:regeneration")
+  end
 end

@@ -463,7 +463,9 @@ class User < ApplicationRecord
   end
 
   def regenerate_feed!
-    RegenerationWorker.perform_async(account_id) if Redis.current.set("account:#{account_id}:regeneration", true, nx: true, ex: 1.day.seconds)
+    if Redis.current.set("account:#{account_id}:regeneration", true, nx: true, ex: 1.day.seconds) && Redis.current.set("account:#{account_id}:media:regeneration", true, nx: true, ex: 1.day.seconds)
+       RegenerationWorker.perform_async(account_id)
+    end
   end
 
   def needs_feed_update?

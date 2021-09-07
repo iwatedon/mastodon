@@ -9,5 +9,6 @@ class MergeWorker
     true
   ensure
     Redis.current.del("account:#{into_account_id}:regeneration")
+    Redis.current.del("account:#{into_account_id}:media:regeneration")
   end
 end

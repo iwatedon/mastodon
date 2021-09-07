@@ -5,5 +5,6 @@ class PrecomputeFeedService < BaseService
     FeedManager.instance.populate_home(account)
   ensure
     Redis.current.del("account:#{account.id}:regeneration")
+    Redis.current.del("account:#{account.id}:media:regeneration")
   end
 end

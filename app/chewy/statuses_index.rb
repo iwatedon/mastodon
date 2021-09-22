@@ -33,6 +33,7 @@ class StatusesIndex < Chewy::Index
         filter: %w(
           kuromoji_stemmer
           kuromoji_part_of_speech
+          ja_stop
           custom_synonym
           english_possessive_stemmer
           english_stemmer

@@ -11,12 +11,16 @@ class StatusesIndex < Chewy::Index
         type: 'stemmer',
         language: 'possessive_english',
       },
+      custom_synonym: {
+        type: 'synonym',
+        synonyms_path: '/etc/elasticsearch/synonym.txt'
+      },
     },
     tokenizer: {
       ja_tokenizer: {
         type: 'kuromoji_tokenizer',
         mode: 'search',
-        user_dictionary: 'userdict_ja.txt',
+        user_dictionary: '/etc/elasticsearch/userdict_ja.txt',
       },
     },
     analyzer: {
@@ -29,6 +33,7 @@ class StatusesIndex < Chewy::Index
         filter: %w(
           kuromoji_stemmer
           kuromoji_part_of_speech
+          custom_synonym
           english_possessive_stemmer
           english_stemmer
         ),

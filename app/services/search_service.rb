@@ -37,7 +37,7 @@ class SearchService < BaseService
   def perform_statuses_search!
     results = Status.where(visibility: :public)
                     .where('statuses.text &@~ ?', @query)
-                    .searchable_by_account(@account)
+                    .joins(:media_attachments)
                     .offset(@offset)
                     .limit(@limit)
                     .order('statuses.id DESC')

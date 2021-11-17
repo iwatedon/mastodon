@@ -45,12 +45,10 @@ module Mastodon
 
       progress = ProgressBar.create(total: nil, format: '%t%c/%u |%b%i| %e (%r docs/s)', autofinish: false)
 
-      # First, ensure all indices are created and have the correct
-      # structure, so that live data can already be written
-      indices.select { |index| index.specification.changed? }.each do |index|
-        progress.title = "Upgrading #{index} "
-        index.purge
-        index.specification.lock!
+      # Create indices with new suffixes.
+      suffix = Time.to_i
+      indices.map do |index|
+        index.create! suffix, alias: false
       end
 
       db_config = ActiveRecord::Base.configurations[Rails.env].dup
@@ -125,7 +123,7 @@ module Mastodon
                     end
                   end
 
-                  Chewy::Type::Import::BulkRequest.new(type).perform(bulk_body)
+                  Chewy::Type::Import::BulkRequest.new(type, suffix: suffix).perform(bulk_body)
 
                   progress.progress += records.size
 
@@ -148,6 +146,25 @@ module Mastodon
       progress.stop
 
       say("Indexed #{added.value} records, de-indexed #{removed.value}", :green, true)
+
+      # Switch aliases, like chewy:reset.
+      indices.each |index| do
+        old_indices = index.indexes - [index.index_name]
+        general_name = index.index_name
+
+        index.delete if indexes.blank?
+        actions = [
+          *old_indices.map do |old_index|
+            { remove: { index: old_index, alias: general_name } }
+          end,
+          { add: { index: index.index_name(suffix: suffix), alias: general_name } }
+        ]
+        Chewy.client.indices.update_aliases body: { actions: actions }
+
+        Chewy.client.indices.delete index: old_indices if old_indices.present?
+
+        index.specification.lock!
+      end
     end
   end
 end

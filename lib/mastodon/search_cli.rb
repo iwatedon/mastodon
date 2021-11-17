@@ -51,12 +51,10 @@ module Mastodon
 
       progress = ProgressBar.create(total: nil, format: '%t%c/%u |%b%i| %e (%r docs/s)', autofinish: false)
 
-      # First, ensure all indices are created and have the correct
-      # structure, so that live data can already be written
+      # Create indices with new suffixes if specification is changed.
+      suffix = (Time.now.to_f * 1000).round
       indices.select { |index| index.specification.changed? }.each do |index|
-        progress.title = "Upgrading #{index} "
-        index.purge
-        index.specification.lock!
+        index.create! suffix, alias: false
       end
 
       db_config = ActiveRecord::Base.configurations[Rails.env].dup
@@ -129,7 +127,11 @@ module Mastodon
                   end
                 end
 
-                Chewy::Index::Import::BulkRequest.new(index).perform(bulk_body)
+                if index.specification.changed?
+                  Chewy::Index::Import::BulkRequest.new(index, suffix: suffix).perform(bulk_body)
+                else
+                  Chewy::Index::Import::BulkRequest.new(index).perform(bulk_body)
+                end
 
                 progress.progress += records.size
 
@@ -151,6 +153,25 @@ module Mastodon
       progress.stop
 
       say("Indexed #{added.value} records, de-indexed #{removed.value}", :green, true)
+
+      # Switch aliases, like chewy:reset.
+      indices.select { |index| index.specification.changed? }.each do |index|
+        old_indices = index.indexes - [index.index_name]
+        general_name = index.index_name
+
+        index.delete if old_indices.blank?
+        actions = [
+          *old_indices.map do |old_index|
+            { remove: { index: old_index, alias: general_name } }
+          end,
+          { add: { index: index.index_name(suffix: suffix), alias: general_name } }
+        ]
+        Chewy.client.indices.update_aliases body: { actions: actions }
+
+        Chewy.client.indices.delete index: old_indices if old_indices.present?
+
+        index.specification.lock!
+      end
     end
   end
 end

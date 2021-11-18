@@ -45,9 +45,9 @@ module Mastodon
 
       progress = ProgressBar.create(total: nil, format: '%t%c/%u |%b%i| %e (%r docs/s)', autofinish: false)
 
-      # Create indices with new suffixes.
-      suffix = Time.to_i
-      indices.map do |index|
+      # Create indices with new suffixes if specification is changed.
+      suffix = Time.now.to_i
+      indices.select { |index| index.specification.changed? }.each do |index|
         index.create! suffix, alias: false
       end
 
@@ -123,7 +123,11 @@ module Mastodon
                     end
                   end
 
-                  Chewy::Type::Import::BulkRequest.new(type, suffix: suffix).perform(bulk_body)
+                  if index.specification.changed?
+                    Chewy::Type::Import::BulkRequest.new(type, suffix: suffix).perform(bulk_body)
+                  else
+                    Chewy::Type::Import::BulkRequest.new(type).perform(bulk_body)
+                  end
 
                   progress.progress += records.size
 
@@ -148,11 +152,11 @@ module Mastodon
       say("Indexed #{added.value} records, de-indexed #{removed.value}", :green, true)
 
       # Switch aliases, like chewy:reset.
-      indices.each |index| do
+      indices.select { |index| index.specification.changed? }.each do |index|
         old_indices = index.indexes - [index.index_name]
         general_name = index.index_name
 
-        index.delete if indexes.blank?
+        index.delete if old_indices.blank?
         actions = [
           *old_indices.map do |old_index|
             { remove: { index: old_index, alias: general_name } }

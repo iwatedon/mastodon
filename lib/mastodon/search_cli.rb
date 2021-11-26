@@ -17,7 +17,7 @@ module Mastodon
     ].freeze
 
     option :concurrency, type: :numeric, default: 2, aliases: [:c], desc: 'Workload will be split between this number of threads'
-    option :batch_size, type: :numeric, default: 1_000, aliases: [:b], desc: 'Number of records for each batch'
+    option :batch_size, type: :numeric, default: 1_000, aliases: [:b], desc: 'Number of records in each batch'
     option :only, type: :array, enum: %w(accounts tags statuses), desc: 'Only process these indices'
     desc 'deploy', 'Create or upgrade ElasticSearch indices and populate them'
     long_desc <<~LONG_DESC

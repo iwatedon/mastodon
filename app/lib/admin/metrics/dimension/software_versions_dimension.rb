@@ -10,7 +10,7 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
   protected
 
   def perform_query
-    [mastodon_version, ruby_version, postgresql_version, redis_version]
+    [mastodon_version, ruby_version, postgresql_version, redis_version, elasticsearch_version]
   end
 
   def mastodon_version
@@ -65,5 +65,16 @@ class Admin::Metrics::Dimension::SoftwareVersionsDimension < Admin::Metrics::Dim
         redis.info
       end
     end
+  end
+
+  def elasticsearch_version
+    value = Chewy.enabled? ? Chewy.client.info['version']['number'] : nil
+
+    {
+      key: 'elasticsearch',
+      human_key: 'Elasticsearch',
+      value: value,
+      human_value: value,
+    }
   end
 end

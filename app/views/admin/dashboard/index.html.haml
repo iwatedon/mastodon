@@ -94,6 +94,10 @@
         %li
           Redis
           %span.pull-right= @redis_version
+        - if @elasticsearch_version
+          %li
+            Elasticsearch
+            %span.pull-right= @elasticsearch_version
 
   .dashboard__widgets__space
     %div

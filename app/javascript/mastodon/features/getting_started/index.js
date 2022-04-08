@@ -99,11 +99,8 @@ class GettingStarted extends ImmutablePureComponent {
     if (multiColumn) {
       navItems.push(
         <ColumnSubheading key='header-discover' text={intl.formatMessage(messages.discover)} />,
-        <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/timelines/public/local' />,
-        <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
-        <ColumnLink key='gochisou_timeline' icon='cutlery' text={intl.formatMessage(messages.gochisou_timeline)} to='/timelines/tag/gochisou_photo' />,
       );
-      height += 34 + 48*3;
+      height += 34;
     }
 
     navItems.push(
@@ -115,9 +112,10 @@ class GettingStarted extends ImmutablePureComponent {
       navItems.push(
         <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
+        <ColumnLink key='gochisou_timeline' icon='cutlery' text={intl.formatMessage(messages.gochisou_timeline)} to='/tag/gochisou_photo' />,
       );
 
-      height += 48*2;
+      height += 48*3;
 
       navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,

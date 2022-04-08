@@ -112,7 +112,7 @@ class GettingStarted extends ImmutablePureComponent {
       navItems.push(
         <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
-        <ColumnLink key='gochisou_timeline' icon='cutlery' text={intl.formatMessage(messages.gochisou_timeline)} to='/tag/gochisou_photo' />,
+        <ColumnLink key='gochisou_timeline' icon='cutlery' text={intl.formatMessage(messages.gochisou_timeline)} to='/tags/gochisou_photo' />,
       );
 
       height += 48*3;

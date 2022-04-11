@@ -850,7 +850,7 @@ const startWorker = async (workerId) => {
 
       break;
     case 'user:all':
-      channelsForUserStream(req);
+      const channel = channelsForUserStream(req);
       resolve({
         channelIds: channel,
         options: { needsFiltering: false },

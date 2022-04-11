@@ -836,11 +836,8 @@ const startWorker = async (workerId) => {
             onlyMediaSetting = true;
           }
           const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
-
-          const channel = channelsForUserStream(req, onlyMedia);
-
           resolve({
-            channelIds: channel,
+            channelIds: channelsForUserStream(req, onlyMedia),
             options: { needsFiltering: false },
           });
         } finally {
@@ -850,9 +847,8 @@ const startWorker = async (workerId) => {
 
       break;
     case 'user:all':
-      const channel = channelsForUserStream(req);
       resolve({
-        channelIds: channel,
+        channelIds: channelsForUserStream(req),
         options: { needsFiltering: false },
       });
 

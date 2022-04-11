@@ -837,7 +837,7 @@ const startWorker = async (workerId) => {
           }
           const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
 
-          channel = channelsForUserStream(req, onlyMedia);
+          const channel = channelsForUserStream(req, onlyMedia);
 
           resolve({
             channelIds: channel,

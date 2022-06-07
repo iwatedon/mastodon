@@ -45,7 +45,7 @@ class ColumnSettings extends React.PureComponent {
 
     // Prevent changes that add more than 4 tags, but allow removing
     // tags that were already added before
-    if ((value.length > 4) && !(value < oldValue)) {
+    if ((value.length > 20) && !(value < oldValue)) {
       return;
     }
 

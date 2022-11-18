@@ -72,6 +72,10 @@ class PostStatusService < BaseService
     @visibility   = :unlisted if @visibility&.to_sym == :public && @account.silenced?
     @scheduled_at = @options[:scheduled_at]&.to_datetime
     @scheduled_at = nil if scheduled_in_the_past?
+
+    if @visibility == 'public'
+      @text += ' #iwatedon'
+    end
   rescue ArgumentError
     raise ActiveRecord::RecordInvalid
   end

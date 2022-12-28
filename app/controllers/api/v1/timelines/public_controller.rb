@@ -22,17 +22,39 @@ class Api::V1::Timelines::PublicController < Api::V1::Timelines::BaseController
   end
 
   def public_statuses
-    public_feed.get(
-      limit_param(DEFAULT_STATUSES_LIMIT),
-      params[:max_id],
-      params[:since_id],
-      params[:min_id]
-    )
+    if truthy_param?(:local) then
+      local_feed.get(
+        limit_param(DEFAULT_STATUSES_LIMIT),
+        params[:max_id],
+        params[:since_id],
+        params[:min_id]
+      )
+    else
+      public_feed.get(
+        limit_param(DEFAULT_STATUSES_LIMIT),
+        params[:max_id],
+        params[:since_id],
+        params[:min_id]
+      )
+    end
   end
 
   def public_feed
     PublicFeed.new(
       current_account,
+      local: truthy_param?(:local),
+      remote: truthy_param?(:remote),
+      only_media: truthy_param?(:only_media)
+    )
+  end
+
+  def local_feed
+    TagFeed.new(
+      Tag.find_normalized('#iwatedon'),
+      current_account,
+      any: params[:any],
+      all: params[:all],
+      none: params[:none],
       local: truthy_param?(:local),
       remote: truthy_param?(:remote),
       only_media: truthy_param?(:only_media)

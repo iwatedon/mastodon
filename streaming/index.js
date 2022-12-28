@@ -1106,7 +1106,7 @@ const startServer = async () => {
       resolveFeed('public', 'timeline:public', { needsFiltering: true });
       break;
     case 'public:local':
-      resolveFeed('public', 'timeline:public:local', { needsFiltering: true });
+      resolveFeed('hashtag', `timeline:hashtag:${normalizeHashtag('iwatedon')}`, { needsFiltering: true });
       break;
     case 'public:remote':
       resolveFeed('public', 'timeline:public:remote', { needsFiltering: true });
@@ -1115,7 +1115,7 @@ const startServer = async () => {
       resolveFeed('public', 'timeline:public:media', { needsFiltering: true });
       break;
     case 'public:local:media':
-      resolveFeed('public', 'timeline:public:local:media', { needsFiltering: true });
+      resolveFeed('hashtag', `timeline:hashtag:${normalizeHashtag('iwatedon')}:media`, { needsFiltering: true });
       break;
     case 'public:remote:media':
       resolveFeed('public', 'timeline:public:remote:media', { needsFiltering: true });

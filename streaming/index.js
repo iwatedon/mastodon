@@ -1019,7 +1019,7 @@ const startServer = async () => {
       break;
     case 'public:local':
       resolve({
-        channelIds: ['timeline:public:local'],
+        channelIds: [`timeline:hashtag:${normalizeHashtag('iwatedon')}`],
         options: { needsFiltering: true },
       });
 
@@ -1040,7 +1040,7 @@ const startServer = async () => {
       break;
     case 'public:local:media':
       resolve({
-        channelIds: ['timeline:public:local:media'],
+        channelIds: [`timeline:hashtag:${normalizeHashtag('iwatedon')}:media`],
         options: { needsFiltering: true },
       });
 

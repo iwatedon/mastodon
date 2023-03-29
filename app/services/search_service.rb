@@ -38,7 +38,7 @@ class SearchService < BaseService
     results = Status.where(visibility: :public)
                     .joins(:media_attachments)
                     .where('statuses.text &@~ ?', @query)
-                    .distinct
+                    .group(:id)
                     .offset(@offset)
                     .limit(@limit)
                     .order('statuses.id DESC')

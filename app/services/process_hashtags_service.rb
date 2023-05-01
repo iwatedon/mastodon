@@ -8,6 +8,14 @@ class ProcessHashtagsService < BaseService
     @previous_tags = status.tags.to_a
     @current_tags  = []
 
+    default_hashtag = 'iwatedon'
+    if @status.visibility == 'public' && @status.local? && !@status.reply?
+      unless @raw_tags.include?(default_hashtag)
+        @raw_tags << default_hashtag
+        status.update!(text: status.text + " ##{default_hashtag}")
+      end
+    end
+
     assign_tags!
     update_featured_tags!
   end

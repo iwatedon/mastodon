@@ -73,9 +73,6 @@ class PostStatusService < BaseService
     @scheduled_at = @options[:scheduled_at]&.to_datetime
     @scheduled_at = nil if scheduled_in_the_past?
 
-    if @visibility == 'public' && @options[:thread].nil?
-      @text += ' #iwatedon'
-    end
   rescue ArgumentError
     raise ActiveRecord::RecordInvalid
   end

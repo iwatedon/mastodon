@@ -1036,6 +1036,7 @@ const startWorker = async (workerId) => {
           if (result.rows.length > 0) {
             onlyMediaSetting = true;
           }
+          const location = url.parse(req.url, true);
           const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';
           resolve({
             channelIds: channelsForUserStream(req, onlyMedia),

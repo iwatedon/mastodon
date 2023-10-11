@@ -12,7 +12,7 @@
       = ff.input :aggregate_reblogs, wrapper: :with_label, recommended: true, label: I18n.t('simple_form.labels.defaults.setting_aggregate_reblogs'), hint: I18n.t('simple_form.hints.defaults.setting_aggregate_reblogs')
 
     .fields-group
-      = f.input :setting_x_only_media_on_home_timeline, as: :boolean, wrapper: :with_label
+      = ff.input :x_only_media_on_home_timeline, as: :boolean, wrapper: :with_label, label: I18n.t('simple_form.labels.defaults.setting_x_only_media_on_home_timeline'), hint: I18n.t('simple_form.hints.defaults.setting_x_only_media_on_home_timeline')
 
     %h4= t 'preferences.posting_defaults'
 

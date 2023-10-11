@@ -63,7 +63,7 @@ class FeedManager
     trim(:home, account.id)
 
     PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update }) if push_update_required?("timeline:#{account.id}")
-    PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}:media", { 'update' => update }) if push_update_required?("timeline:#{account.id}", true) && status.proper.media_attachments.any?
+    PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}:media", { 'update' => update }) if push_update_required?("timeline:#{account.id}", only_media: true) && status.proper.media_attachments.any?
     true
   end
 

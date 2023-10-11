@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import { Icon }  from 'mastodon/components/icon';
-import { domain, searchEnabled } from 'mastodon/initial_state';
+import { searchEnabled } from 'mastodon/initial_state';
 import { HASHTAG_REGEX } from 'mastodon/utils/hashtags';
 
 const messages = defineMessages({

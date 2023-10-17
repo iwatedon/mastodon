@@ -50,7 +50,7 @@ export function submitSearch(type) {
       params: {
         q: value,
         resolve: signedIn,
-        limit: 20,
+        limit: 11,
         type,
       },
     }).then(response => {

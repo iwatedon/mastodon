@@ -60,6 +60,10 @@ class Rack::Attack
     def paging_request?
       params['page'].present? || params['min_id'].present? || params['max_id'].present? || params['since_id'].present?
     end
+
+    def status_search_request?
+      get? && path == '/api/v2/search' && (params['type'].blank? || params['type'] == 'statuses')
+    end
   end
 
   Rack::Attack.blocklist('deny from blocklist') do |req|
@@ -107,6 +111,10 @@ class Rack::Attack
 
   throttle('throttle_oauth_application_registrations/ip', limit: 5, period: 10.minutes) do |req|
     req.throttleable_remote_ip if req.post? && req.path == '/api/v1/apps'
+  end
+
+  throttle('throttle_api_status_search', limit: 1, period: 10.seconds) do |req|
+    req.authenticated_user_id if req.status_search_request?
   end
 
   throttle('throttle_sign_up_attempts/ip', limit: 25, period: 5.minutes) do |req|

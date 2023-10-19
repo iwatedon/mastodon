@@ -105,6 +105,10 @@ class Rack::Attack
     req.authenticated_user_id if (req.post? && req.path.match?(API_DELETE_REBLOG_REGEX)) || (req.delete? && req.path.match?(API_DELETE_STATUS_REGEX))
   end
 
+  throttle('throttle_api_search', limit: 1, period: 10.seconds) do |req|
+    req.authenticated_user_id if req.get? && req.path == '/api/v2/search'
+  end
+
   throttle('throttle_sign_up_attempts/ip', limit: 25, period: 5.minutes) do |req|
     req.throttleable_remote_ip if req.post? && req.path_matches?('/auth')
   end

@@ -60,6 +60,13 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
       attach_counts(@status)
     end
 
+    if like_a_spam?
+      @status = nil
+      raise ActiveRecord::Rollback
+    end
+
+    return if @status.nil?
+
     resolve_thread(@status)
     resolve_unresolved_mentions(@status)
     fetch_replies(@status)
@@ -453,5 +460,14 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   rescue ActiveRecord::StaleObjectError
     poll.reload
     retry
+  end
+
+  def like_a_spam?
+    (
+      !@status.account.local? &&
+      @status.account.followers_count.zero? &&
+      @status.account.created_at > 7.days.ago &&
+      @mentions.count >= 2
+    )
   end
 end

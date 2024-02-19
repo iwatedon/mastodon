@@ -87,6 +87,13 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
       attach_tags(@status)
     end
 
+    if like_a_spam?
+      @status = nil
+      raise ActiveRecord::Rollback
+    end
+
+    return if @status.nil?
+
     resolve_thread(@status)
     fetch_replies(@status)
     distribute
@@ -425,5 +432,14 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   rescue ActiveRecord::StaleObjectError
     poll.reload
     retry
+  end
+
+  def like_a_spam?
+    (
+      !@status.account.local? &&
+      @status.account.followers_count.zero? &&
+      @status.account.created_at > 1.day.ago &&
+      @mentions.count >= 2
+    )
   end
 end

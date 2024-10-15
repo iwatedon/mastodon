@@ -1,6 +1,7 @@
 # See http://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
 
 User-agent: GPTBot
+User-agent: MJ12Bot
 Disallow: /
 
 User-agent: *

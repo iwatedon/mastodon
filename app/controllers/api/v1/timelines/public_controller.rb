@@ -66,8 +66,8 @@ class Api::V1::Timelines::PublicController < Api::V1::Timelines::BaseController
       any: params[:any],
       all: params[:all],
       none: params[:none],
-      local: truthy_param?(:local),
-      remote: truthy_param?(:remote),
+      local: true,
+      remote: true,
       only_media: truthy_param?(:only_media)
     )
   end

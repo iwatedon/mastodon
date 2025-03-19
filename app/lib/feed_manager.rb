@@ -561,7 +561,7 @@ class FeedManager
         # This is not something we've already seen reblogged, so we
         # can just add it to the feed (and note that we're reblogging it).
         redis.zadd(timeline_key, status.id, status.id)
-        redis.zadd(media_key, status.id, status.id) if status.proper.media_attachments.any?
+        redis.zadd(media_key, status.id, status.id) if timeline_type == :home && status.proper.media_attachments.any?
       else
         # Another reblog of the same status was already in the
         # REBLOG_FALLOFF most recent statuses, so we note that this
@@ -578,7 +578,7 @@ class FeedManager
       return false unless redis.zscore(reblog_key, status.id).nil?
 
       redis.zadd(timeline_key, status.id, status.id)
-      redis.zadd(media_key, status.id, status.id) if status.proper.media_attachments.any?
+      redis.zadd(media_key, status.id, status.id) if timeline_type == :home && status.proper.media_attachments.any?
     end
 
     true
@@ -596,6 +596,7 @@ class FeedManager
   def remove_from_feed(timeline_type, account_id, status, aggregate_reblogs: true)
     timeline_key = key(timeline_type, account_id)
     reblog_key   = key(timeline_type, account_id, 'reblogs')
+    media_key    = key(timeline_type, account_id, 'media')
 
     if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
       # 1. If the reblogging status is not in the feed, stop.
@@ -614,6 +615,7 @@ class FeedManager
       other_reblog = redis.smembers(reblog_set_key).map(&:to_i).min
 
       redis.zadd(timeline_key, other_reblog, other_reblog) if other_reblog
+      redis.zadd(media_key, other_reblog, other_reblog) if timeline_type == :home && other_reblog && status.proper.media_attachments.any?
       redis.zadd(reblog_key, other_reblog, status.reblog_of_id) if other_reblog
 
       # 4. Remove the reblogging status from the feed (as normal)
@@ -625,6 +627,7 @@ class FeedManager
     end
 
     redis.zrem(timeline_key, status.id)
+    redis.zrem(media_key, status.id) if timeline_type == :home && status.proper.media_attachments.any?
   end
 
   # Pre-fetch various objects and relationships for given statuses that

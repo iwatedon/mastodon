@@ -33,14 +33,7 @@ const INITIAL_PAGE_LIMIT = 10;
 const INITIAL_DISPLAY = 4;
 
 const hidePeek = <T,>(list: T[]) => {
-  if (
-    list.length > INITIAL_PAGE_LIMIT &&
-    list.length % INITIAL_PAGE_LIMIT === 1
-  ) {
-    return list.slice(0, -2);
-  } else {
-    return list;
-  }
+  return list.slice(0, -2); // Always show LoadMore
 };
 
 const renderAccounts = (accountIds: string[]) =>

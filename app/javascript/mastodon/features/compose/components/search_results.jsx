@@ -68,7 +68,7 @@ export const SearchResults = () => {
     statuses = (
       <SearchSection title={<><Icon id='quote-right' icon={FindInPageIcon} /><FormattedMessage id='search_results.statuses' defaultMessage='Posts' /></>}>
         {withoutLastResult(results.get('statuses')).map(statusId => <StatusContainer key={statusId} id={statusId} />)}
-        {(results.get('statuses').size > INITIAL_PAGE_LIMIT && results.get('statuses').size % INITIAL_PAGE_LIMIT === 1) && <LoadMore visible onClick={handleLoadMoreStatuses} />}
+        <LoadMore visible onClick={handleLoadMoreStatuses} />
       </SearchSection>
     );
   }

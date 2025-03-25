@@ -29,13 +29,13 @@ class StatusesSearchService < BaseService
                     .where('statuses.text &@~ ?', @query)
                     .group(:id)
                     .offset(@offset)
-                    .limit(@limit * 2) # Ad hoc solution for paging issue...
+                    .limit(@limit)
                     .order('statuses.id DESC')
 
     account_ids         = results.map(&:account_id)
     account_domains     = results.map(&:account_domain)
     preloaded_relations = @account.relations_map(account_ids, account_domains)
 
-    results.reject { |status| StatusFilter.new(status, @account, preloaded_relations).filtered? }.first(@limit)
+    results.reject { |status| StatusFilter.new(status, @account, preloaded_relations).filtered? }
   end
 end

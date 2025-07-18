@@ -29,7 +29,6 @@ const messages = defineMessages({
   title: { id: 'search_results.title', defaultMessage: 'Search for "{q}"' },
 });
 
-const INITIAL_PAGE_LIMIT = 10;
 const INITIAL_DISPLAY = 4;
 
 const hidePeek = <T,>(list: T[]) => {
@@ -109,12 +108,8 @@ export const SearchResults: React.FC<{ multiColumn: boolean }> = ({
     }
   }, [dispatch, mappedType]);
 
-  // We request 1 more result than we display so we can tell if there'd be a next page
-  const hasMore =
-    mappedType !== 'all' && results
-      ? results[mappedType].length > INITIAL_PAGE_LIMIT &&
-        results[mappedType].length % INITIAL_PAGE_LIMIT === 1
-      : false;
+  // Showing LoadMore always
+  const hasMore = true;
 
   let filteredResults;
 

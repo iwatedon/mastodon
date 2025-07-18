@@ -159,9 +159,8 @@ async function refreshHomeTimelineAndNotification(dispatch) {
 }
 
 /**
+ * @param {Object} options
  * @param {boolean} [options.onlyMedia]
- * @param root0
- * @param root0.onlyMedia
  * @returns {function(): void}
  */
 export const connectUserStream = ({ onlyMedia } = {}) =>

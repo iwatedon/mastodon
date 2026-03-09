@@ -1081,7 +1081,7 @@ const startServer = async () => {
           let onlyMediaSetting = false;
 	  const result = await client.query('select settings from users where account_id = $1', [req.accountId]);
           if (result.rows.length > 0) {
-          try {
+            try {
               const settings = JSON.parse(result.rows[0].settings);
               onlyMediaSetting = settings.x_only_media_on_home_timeline;
             } catch (e) {

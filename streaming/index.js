@@ -1037,6 +1037,7 @@ const startServer = async () => {
 
   /**
    * @param {Request} req
+   * @param onlyMedia
    * @returns {string[]}
    */
   const channelsForUserStream = (req, onlyMedia = false) => {
@@ -1078,9 +1079,13 @@ const startServer = async () => {
         const client = await pgPool.connect();
         try {
           let onlyMediaSetting = false;
-          const result = await client.query('select \'true\' from settings where thing_id = $1 and var = \'x_only_media_on_home_timeline\' and value = e\'--- true\\n...\\n\'', [req.accountId]);
+	  const result = await client.query('select settings from users where account_id = $1', [req.accountId]);
           if (result.rows.length > 0) {
-            onlyMediaSetting = true;
+	    try {
+              const settings = JSON.parse(result.rows[0].settings);
+              onlyMediaSetting = settings.x_only_media_on_home_timeline;
+            } catch (e) {
+            }
           }
           const location = url.parse(req.url, true);
           const onlyMedia = (location.query.only_media === undefined && onlyMediaSetting) || location.query.only_media === '1' || location.query.only_media === 'true';

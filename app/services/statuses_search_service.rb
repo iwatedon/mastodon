@@ -27,16 +27,18 @@ class StatusesSearchService < BaseService
 
   def status_search_results
     results = Status.where(visibility: :public)
-                    .joins(:media_attachments)
-                    .where('statuses.text &@~ ?', @query)
-                    .group(:id)
-                    .offset(@offset)
-                    .limit(@limit)
-                    .order('statuses.id DESC')
+      .joins(:media_attachments)
+      .where('statuses.text &@~ ?', @query)
+      .group(:id)
+      .offset(@offset)
+      .limit(@limit)
+      .order('statuses.id DESC')
 
     account_ids         = results.map(&:account_id)
     account_domains     = results.map(&:account_domain)
 
-    results.reject { |status| StatusFilter.new(status, @account, preloaded_relations).filtered? }
+    @account.preload_relations!(account_ids, account_domains)
+
+    results.reject { |status| StatusFilter.new(status, @account).filtered? }
   end
 end

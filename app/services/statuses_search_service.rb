@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class StatusesSearchService < BaseService
-  include SearchStoplight
-
-  ES_QUERY_TIMEOUT = ENV.fetch('ES_QUERY_TIMEOUT', '10s')
-
   def call(query, account = nil, options = {})
     MastodonOTELTracer.in_span('StatusesSearchService#call') do |span|
       @query   = query&.strip
